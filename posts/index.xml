@@ -1,0 +1,1925 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on Karn Wong</title>
+        <link>kahnwong.github.io/posts/</link>
+        <description>Recent content in Posts on Karn Wong</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 23 May 2020 00:00:00 +0000</lastBuildDate>
+        <atom:link href="kahnwong.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+        
+        <item>
+            <title>Impute pipelines</title>
+            <link>kahnwong.github.io/posts/2020-05-23-impute-pipelines/</link>
+            <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2020-05-23-impute-pipelines/</guid>
+            <description>Imagine having a dataset that you need to use for training a prediction model, but some of the features are missing. The good news is you don&amp;rsquo;t need to throw some data away, just have to impute them. Below are steps you can take in order to create an imputation pipeline. Github link here!
+from random import randint import pandas as pd import numpy as np from sklearn.preprocessing import OneHotEncoder from sklearn.</description>
+            <content type="html"><![CDATA[<p>Imagine having a dataset that you need to use for training a prediction model, but some of the features are missing. The good news is you don&rsquo;t need to throw some data away, just have to impute them. Below are steps you can take in order to create an imputation pipeline. Github link <a href="https://github.com/kahnwong/impute-pipelines">here!</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> randint
+
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> OneHotEncoder
+<span style="color:#f92672">from</span> sklearn.impute <span style="color:#f92672">import</span> SimpleImputer
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> StandardScaler
+<span style="color:#f92672">from</span> sklearn.pipeline <span style="color:#f92672">import</span> Pipeline
+<span style="color:#f92672">from</span> sklearn.compose <span style="color:#f92672">import</span> ColumnTransformer
+<span style="color:#f92672">from</span> sklearn.ensemble <span style="color:#f92672">import</span> RandomForestRegressor, GradientBoostingRegressor, ExtraTreesRegressor
+<span style="color:#f92672">from</span> sklearn.tree <span style="color:#f92672">import</span> DecisionTreeRegressor
+<span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> mean_squared_error, median_absolute_error
+
+<span style="color:#f92672">from</span> hyperopt <span style="color:#f92672">import</span> fmin, tpe, hp, Trials, STATUS_OK
+<span style="color:#f92672">import</span> mlflow
+
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+sns<span style="color:#f92672">.</span>set()
+</code></pre></div><h1 id="generate-data">Generate data</h1>
+<p>Since this is an example and I don&rsquo;t want to get sued by using my company&rsquo;s data, synthetic data it is :)</p>
+<p>This simulates a dataset from different pseudo-regions, with different characteristics. Real data will be much more varied, but I make it more obvious so it&rsquo;s easy to see the differences.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate_array_with_random_nan</span>(lower_bound, upper_bound, size):
+    a <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>randint(lower_bound, upper_bound<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, size<span style="color:#f92672">=</span>size)<span style="color:#f92672">.</span>astype(float)
+    mask <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>choice([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>], a<span style="color:#f92672">.</span>shape, p<span style="color:#f92672">=</span>[<span style="color:#f92672">.</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">.</span><span style="color:#ae81ff">9</span>])<span style="color:#f92672">.</span>astype(bool)
+    a[mask] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>nan
+    
+    <span style="color:#66d9ef">return</span> a
+
+size <span style="color:#f92672">=</span> <span style="color:#ae81ff">6000</span>
+
+df_cbd <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame()
+df_cbd[<span style="color:#e6db74">&#39;bed&#39;</span>] <span style="color:#f92672">=</span> generate_array_with_random_nan(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, size)
+df_cbd[<span style="color:#e6db74">&#39;bath&#39;</span>] <span style="color:#f92672">=</span> generate_array_with_random_nan(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, size)
+df_cbd[<span style="color:#e6db74">&#39;area_usable&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">40</span>, size<span style="color:#f92672">=</span>size)
+df_cbd[<span style="color:#e6db74">&#39;region&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;cbd&#39;</span>
+
+df_suburb <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame()
+df_suburb[<span style="color:#e6db74">&#39;bed&#39;</span>] <span style="color:#f92672">=</span> generate_array_with_random_nan(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, size)
+df_suburb[<span style="color:#e6db74">&#39;bath&#39;</span>] <span style="color:#f92672">=</span> generate_array_with_random_nan(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, size)
+df_suburb[<span style="color:#e6db74">&#39;area_usable&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">200</span>, size<span style="color:#f92672">=</span>size)
+df_suburb[<span style="color:#e6db74">&#39;region&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;suburb&#39;</span>
+
+df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat([df_cbd, df_suburb])
+df
+</code></pre></div><table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="right">bed</th>
+<th align="right">bath</th>
+<th align="right">area_usable</th>
+<th align="left">region</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">33</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">23</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">33</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">26</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">28</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">36</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">6</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">38</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">23</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">8</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">36</td>
+<td align="left">cbd</td>
+</tr>
+<tr>
+<td align="right">9</td>
+<td align="right">nan</td>
+<td align="right">2</td>
+<td align="right">29</td>
+<td align="left">cbd</td>
+</tr>
+</tbody>
+</table>
+<h1 id="report-missing-values">Report missing values</h1>
+<p>I also randomly remove some values to mimic real-world data (read: they are never ready to use), here we will visualize the missing rate of each column.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">report_missing</span>(df):
+    cnts <span style="color:#f92672">=</span> []
+    cnt_total <span style="color:#f92672">=</span> len(df)
+    <span style="color:#66d9ef">for</span> col <span style="color:#f92672">in</span> df<span style="color:#f92672">.</span>columns:
+        cnt_missing <span style="color:#f92672">=</span> sum(pd<span style="color:#f92672">.</span>isnull(df[col]) <span style="color:#f92672">|</span> pd<span style="color:#f92672">.</span>isna(df[col]))
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;col: {}, missing: {}%&#34;</span><span style="color:#f92672">.</span>format(col, <span style="color:#ae81ff">100.0</span> <span style="color:#f92672">*</span> cnt_missing <span style="color:#f92672">/</span> cnt_total))
+
+        cnts<span style="color:#f92672">.</span>append({
+            <span style="color:#e6db74">&#39;column&#39;</span>: col,
+            <span style="color:#e6db74">&#39;missing&#39;</span>: <span style="color:#ae81ff">100.0</span> <span style="color:#f92672">*</span> cnt_missing <span style="color:#f92672">/</span> cnt_total
+        })
+
+    cnts_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(cnts)
+    sns<span style="color:#f92672">.</span>barplot(x<span style="color:#f92672">=</span>cnts_df<span style="color:#f92672">.</span>missing, 
+                y<span style="color:#f92672">=</span>cnts_df<span style="color:#f92672">.</span>column, 
+    <span style="color:#75715e">#             palette=[&#39;r&#39;,&#39;b&#39;],</span>
+    <span style="color:#75715e">#             data=cnts_df</span>
+               )
+    
+    <span style="color:#66d9ef">return</span> sns
+
+report_missing(df)
+</code></pre></div><pre><code>col: bed, missing: 10.266666666666667%
+col: bath, missing: 9.616666666666667%
+col: area_usable, missing: 0.0%
+col: region, missing: 0.0%
+</code></pre>
+<p><img src="/images/impute-pipelines/pipelines_5_2.png" alt="png"></p>
+<h1 id="data-exploration">Data exploration</h1>
+<p>Knowing the missing rate isn&rsquo;t everything, thus it is also a good idea to explore data in other areas too.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># missing bed per region</span>
+df[df<span style="color:#f92672">.</span>bed<span style="color:#f92672">.</span>isna()][<span style="color:#e6db74">&#34;region&#34;</span>]<span style="color:#f92672">.</span>value_counts(dropna<span style="color:#f92672">=</span>False)
+</code></pre></div><pre><code>cbd       634
+suburb    598
+Name: region, dtype: int64
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># missing bath per region</span>
+df[df<span style="color:#f92672">.</span>bath<span style="color:#f92672">.</span>isna()][<span style="color:#e6db74">&#34;region&#34;</span>]<span style="color:#f92672">.</span>value_counts(dropna<span style="color:#f92672">=</span>False)
+</code></pre></div><pre><code>suburb    588
+cbd       566
+Name: region, dtype: int64
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># explore region</span>
+df<span style="color:#f92672">.</span>region<span style="color:#f92672">.</span>value_counts()
+</code></pre></div><pre><code>suburb    6000
+cbd       6000
+Name: region, dtype: int64
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># explore bed</span>
+df<span style="color:#f92672">.</span>bed<span style="color:#f92672">.</span>value_counts()
+</code></pre></div><pre><code>2.0    4050
+1.0    4009
+4.0    1393
+3.0    1316
+Name: bed, dtype: int64
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># explore bath</span>
+df<span style="color:#f92672">.</span>bath<span style="color:#f92672">.</span>value_counts()
+</code></pre></div><pre><code>1.0    4142
+2.0    4022
+3.0    1393
+4.0    1289
+Name: bath, dtype: int64
+</code></pre>
+<h1 id="remove-outliers-wouldnt-want-your-model-to-have-a-sub-par-performance-from-skewed-data--p">Remove outliers (wouldn&rsquo;t want your model to have a sub-par performance from skewed data :-P)</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># remove outliers here</span>
+</code></pre></div><h1 id="create-synthetic-columns">Create synthetic columns</h1>
+<p>In this step, we create percentile, mean and rank columns to add more data points, so the model can perform better :D</p>
+<p>First, we find aggregate percentiles for each groupby set, then add mean and rank columns.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">synth_columns <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#39;bed&#39;</span>: {
+        <span style="color:#e6db74">&#34;region_bath&#34;</span>: [<span style="color:#e6db74">&#39;region&#39;</span>, <span style="color:#e6db74">&#39;bath&#39;</span>]
+    },
+    <span style="color:#e6db74">&#39;bath&#39;</span>: {
+        <span style="color:#e6db74">&#34;region_bed&#34;</span>: [<span style="color:#e6db74">&#39;region&#39;</span>, <span style="color:#e6db74">&#39;bed&#39;</span>]
+    }
+}
+
+<span style="color:#66d9ef">for</span> column, groupby_levels <span style="color:#f92672">in</span> synth_columns<span style="color:#f92672">.</span>items():
+    <span style="color:#66d9ef">for</span> groupby_level_name, groupby_columns <span style="color:#f92672">in</span> groupby_levels<span style="color:#f92672">.</span>items():
+        <span style="color:#75715e"># percentile aggregates</span>
+        <span style="color:#66d9ef">for</span> pctl <span style="color:#f92672">in</span> [<span style="color:#ae81ff">20</span>,<span style="color:#ae81ff">50</span>,<span style="color:#ae81ff">80</span>,<span style="color:#ae81ff">90</span>]:
+            col_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;p{}|{}|{}&#39;</span><span style="color:#f92672">.</span>format(pctl, groupby_level_name, column)
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;calculating -- {}&#34;</span><span style="color:#f92672">.</span>format(col_name))
+            df[col_name] <span style="color:#f92672">=</span> df[groupby_columns<span style="color:#f92672">+</span>[column]]<span style="color:#f92672">.</span>fillna(<span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>groupby(groupby_columns)[column]<span style="color:#f92672">.</span>transform(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">.</span>quantile(pctl<span style="color:#f92672">/</span><span style="color:#ae81ff">100.0</span>))
+
+        <span style="color:#75715e"># mean impute</span>
+        mean_impute <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;mean|{}|{}&#39;</span><span style="color:#f92672">.</span>format(groupby_level_name,column)
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;calculating -- {}&#34;</span><span style="color:#f92672">.</span>format(mean_impute))
+        df[mean_impute] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>groupby(groupby_columns)[column]<span style="color:#f92672">.</span>transform(<span style="color:#e6db74">&#39;mean&#39;</span>)
+        
+        <span style="color:#75715e"># bed/bath rank</span>
+        rank_impute <span style="color:#f92672">=</span> column_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;rank|{}|{}&#39;</span><span style="color:#f92672">.</span>format(groupby_level_name,column)
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;calculating -- {}&#34;</span><span style="color:#f92672">.</span>format(rank_impute))
+        df[rank_impute] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>groupby(groupby_columns)[column]<span style="color:#f92672">.</span>rank(method<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;dense&#39;</span>, na_option<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bottom&#39;</span>)
+
+</code></pre></div><pre><code>calculating -- p20|region_bath|bed
+calculating -- p50|region_bath|bed
+calculating -- p80|region_bath|bed
+calculating -- p90|region_bath|bed
+calculating -- mean|region_bath|bed
+calculating -- rank|region_bath|bed
+calculating -- p20|region_bed|bath
+calculating -- p50|region_bed|bath
+calculating -- p80|region_bed|bath
+calculating -- p90|region_bed|bath
+calculating -- mean|region_bed|bath
+calculating -- rank|region_bed|bath
+</code></pre>
+<h1 id="coalesce-values">Coalesce values</h1>
+<p>In this step we fill in values obtained from the previous step &ndash; impute time!!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">coalesce</span>(df, columns):
+    <span style="color:#e6db74">&#39;&#39;&#39;
+</span><span style="color:#e6db74">    Implement coalesce of function in colunms.
+</span><span style="color:#e6db74">    
+</span><span style="color:#e6db74">    Inputs:
+</span><span style="color:#e6db74">    df: reference dataframe
+</span><span style="color:#e6db74">    columns: columns to perform coalesce
+</span><span style="color:#e6db74">    
+</span><span style="color:#e6db74">    Returns:
+</span><span style="color:#e6db74">    df_tmp: pd.Series that is coalesced
+</span><span style="color:#e6db74">    
+</span><span style="color:#e6db74">    Example:
+</span><span style="color:#e6db74">    df_tmp = pd.DataFrame({&#39;a&#39;: [1,2,None,None,None,None], 
+</span><span style="color:#e6db74">                            &#39;b&#39;: [None,6,None,8,9,None], 
+</span><span style="color:#e6db74">                            &#39;c&#39;: [None,10,None,12,None,13]})
+</span><span style="color:#e6db74">    df_tmp[&#39;new&#39;] = coalesce(df_tmp, [&#39;a&#39;,&#39;b&#39;,&#39;c&#39;])
+</span><span style="color:#e6db74">    print(df_tmp)
+</span><span style="color:#e6db74">    &#39;&#39;&#39;</span>
+    df_tmp <span style="color:#f92672">=</span> df[columns[<span style="color:#ae81ff">0</span>]]
+    <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> columns[<span style="color:#ae81ff">1</span>:]:
+        df_tmp <span style="color:#f92672">=</span> df_tmp<span style="color:#f92672">.</span>fillna(df[c])
+    
+    <span style="color:#66d9ef">return</span> df_tmp
+
+
+coalesce_columns <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;bed&#39;</span>,
+    <span style="color:#e6db74">&#39;p50|region_bath|bed&#39;</span>,
+    <span style="color:#75715e"># p50|GROUPBY_LESSER_WEIGHT|bed, ...</span>
+]
+
+df[<span style="color:#e6db74">&#34;bed_imputed&#34;</span>] <span style="color:#f92672">=</span> coalesce(df, coalesce_columns)
+
+coalesce_columns <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;bath&#39;</span>,
+    <span style="color:#e6db74">&#39;p50|region_bed|bath&#39;</span>,
+     <span style="color:#75715e"># p50|GROUPBY_LESSER_WEIGHT|bath, ...</span>
+]
+
+df[<span style="color:#e6db74">&#34;bath_imputed&#34;</span>] <span style="color:#f92672">=</span> coalesce(df, coalesce_columns)
+</code></pre></div><h1 id="report-missing-values-again">Report missing values (again)</h1>
+<p>After we impute the values, let&rsquo;s see how much we are doing better!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">report_missing(df)
+</code></pre></div><pre><code>col: bed, missing: 10.266666666666667%
+col: bath, missing: 9.616666666666667%
+col: area_usable, missing: 0.0%
+col: region, missing: 0.0%
+col: p20|region_bath|bed, missing: 0.0%
+col: p50|region_bath|bed, missing: 0.0%
+col: p80|region_bath|bed, missing: 0.0%
+col: p90|region_bath|bed, missing: 0.0%
+col: mean|region_bath|bed, missing: 9.616666666666667%
+col: rank|region_bath|bed, missing: 0.0%
+col: p20|region_bed|bath, missing: 0.0%
+col: p50|region_bed|bath, missing: 0.0%
+col: p80|region_bed|bath, missing: 0.0%
+col: p90|region_bed|bath, missing: 0.0%
+col: mean|region_bed|bath, missing: 10.266666666666667%
+col: rank|region_bed|bath, missing: 0.0%
+col: bed_imputed, missing: 0.0%
+col: bath_imputed, missing: 0.0%
+</code></pre>
+<p><img src="/images/impute-pipelines/pipelines_19_2.png" alt="png"></p>
+<p>Notice that the imputed columns there are no missing values. Yay!</p>
+<h1 id="assign-partition">Assign partition</h1>
+<p>In this step, we partition the data into three sets: train, dev and test. Normally we only split into train and test set, but the additional &ldquo;dev&rdquo; set is there so we can make sure it&rsquo;s not too overfit or underfit.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># assign partition</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">assign_partition</span>(x):
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">in</span> [<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">5</span>]:
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">elif</span> x <span style="color:#f92672">in</span> [<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">7</span>]:
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">2</span>
+
+<span style="color:#75715e"># assign random id</span>
+df[<span style="color:#e6db74">&#39;listing_id&#39;</span>] <span style="color:#f92672">=</span> [randint(<span style="color:#ae81ff">1000000</span>, <span style="color:#ae81ff">9999999</span>) <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(df))]
+
+<span style="color:#75715e"># hashing</span>
+df[<span style="color:#e6db74">&#34;hash_id&#34;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#34;listing_id&#34;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: x <span style="color:#f92672">%</span> <span style="color:#ae81ff">10</span>)
+
+<span style="color:#75715e"># assign partition</span>
+df[<span style="color:#e6db74">&#34;partition_id&#34;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#34;hash_id&#34;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: assign_partition(x))
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># define columns group</span>
+y_column <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;area_usable&#39;</span>
+
+categ_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;region&#39;</span>]
+
+numer_columns <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;bed_imputed&#39;</span>,
+    <span style="color:#e6db74">&#39;bath_imputed&#39;</span>,
+    
+    <span style="color:#e6db74">&#39;p20|region_bath|bed&#39;</span>,
+    <span style="color:#e6db74">&#39;p50|region_bath|bed&#39;</span>,
+    <span style="color:#e6db74">&#39;p80|region_bath|bed&#39;</span>,
+    <span style="color:#e6db74">&#39;p90|region_bath|bed&#39;</span>,
+    <span style="color:#e6db74">&#39;mean|region_bath|bed&#39;</span>,
+    <span style="color:#e6db74">&#39;rank|region_bath|bed&#39;</span>,
+    
+    <span style="color:#e6db74">&#39;p20|region_bed|bath&#39;</span>,
+    <span style="color:#e6db74">&#39;p50|region_bed|bath&#39;</span>,
+    <span style="color:#e6db74">&#39;p80|region_bed|bath&#39;</span>,
+    <span style="color:#e6db74">&#39;p90|region_bed|bath&#39;</span>,
+    <span style="color:#e6db74">&#39;mean|region_bed|bath&#39;</span>,
+    <span style="color:#e6db74">&#39;rank|region_bed|bath&#39;</span>,
+]
+
+id_columns <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;listing_id&#39;</span>,
+    <span style="color:#e6db74">&#39;hash_id&#39;</span>,
+    <span style="color:#e6db74">&#39;partition_id&#39;</span>
+]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># remove missing y</span>
+df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>dropna(subset<span style="color:#f92672">=</span>[y_column])
+
+<span style="color:#75715e"># split into train-dev-test</span>
+df_train <span style="color:#f92672">=</span> df[df[<span style="color:#e6db74">&#34;partition_id&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>]
+df_dev <span style="color:#f92672">=</span> df[df[<span style="color:#e6db74">&#34;partition_id&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>]
+df_test <span style="color:#f92672">=</span> df[df[<span style="color:#e6db74">&#34;partition_id&#34;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># split each set into x and y</span>
+y_train <span style="color:#f92672">=</span> df_train[y_column]<span style="color:#f92672">.</span>values
+df_train <span style="color:#f92672">=</span> df_train[numer_columns<span style="color:#f92672">+</span>categ_columns]
+
+y_dev <span style="color:#f92672">=</span> df_dev[y_column]<span style="color:#f92672">.</span>values
+df_dev <span style="color:#f92672">=</span> df_dev[numer_columns<span style="color:#f92672">+</span>categ_columns]
+
+y_test <span style="color:#f92672">=</span> df_test[y_column]<span style="color:#f92672">.</span>values
+df_test <span style="color:#f92672">=</span> df_test[numer_columns<span style="color:#f92672">+</span>categ_columns]
+</code></pre></div><h1 id="create-sklearn-pipelines">Create sklearn pipelines</h1>
+<p>In this step, we chain a few pipelines together to process the dataset for the final time. In this example, we use median followed by standard scalar for numeric columns, and mode followed by encoding labels for categorical columns.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># define pipelines</span>
+impute_median <span style="color:#f92672">=</span> SimpleImputer(strategy<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;median&#39;</span>)
+impute_mode <span style="color:#f92672">=</span> SimpleImputer(strategy<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;most_frequent&#39;</span>)
+
+num_pipeline <span style="color:#f92672">=</span> Pipeline([
+        (<span style="color:#e6db74">&#39;impute_median&#39;</span>, impute_median),
+        (<span style="color:#e6db74">&#39;std_scaler&#39;</span>, StandardScaler()),
+    ])
+
+categ_pipeline <span style="color:#f92672">=</span> Pipeline([
+        (<span style="color:#e6db74">&#39;impute_mode&#39;</span>, impute_mode),
+        (<span style="color:#e6db74">&#39;categ_1hot&#39;</span>, OneHotEncoder(handle_unknown<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ignore&#39;</span>)),
+    ])
+
+full_pipeline <span style="color:#f92672">=</span> ColumnTransformer([
+        (<span style="color:#e6db74">&#34;num&#34;</span>, num_pipeline, numer_columns),
+        (<span style="color:#e6db74">&#34;cat&#34;</span>, categ_pipeline, categ_columns),
+    ])
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># fit and transform</span>
+X_train <span style="color:#f92672">=</span> full_pipeline<span style="color:#f92672">.</span>fit_transform(df_train)
+X_dev <span style="color:#f92672">=</span> full_pipeline<span style="color:#f92672">.</span>transform(df_dev)
+X_test <span style="color:#f92672">=</span> full_pipeline<span style="color:#f92672">.</span>transform(df_test)
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">X_train
+</code></pre></div><pre><code>array([[ 0.04673184,  0.06391404,  0.        , ..., -0.16000115,
+         1.        ,  0.        ],
+       [-0.97000929, -0.97263688,  0.        , ..., -1.01065389,
+         1.        ,  0.        ],
+       [ 0.04673184,  0.06391404,  0.        , ..., -0.16000115,
+         1.        ,  0.        ],
+       ...,
+       [-0.97000929,  1.10046497,  0.        , ...,  0.69065159,
+         0.        ,  1.        ],
+       [ 0.04673184,  1.10046497,  0.        , ...,  0.69065159,
+         0.        ,  1.        ],
+       [ 1.06347297,  2.13701589,  0.        , ...,  1.54130432,
+         0.        ,  1.        ]])
+</code></pre>
+<h1 id="hyperparameter-tuning">Hyperparameter tuning</h1>
+<p>In this step, we try to use different models and parameters to see which performs the best. We utilize mlflow for logging and hyperopt to help with tuning. In this example, we run the trials for 40 iterations, each using a different combination of model and parameters.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># mlflow + hyperopt combo</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">objective</span>(params):
+    regressor_type <span style="color:#f92672">=</span> params[<span style="color:#e6db74">&#39;type&#39;</span>]
+    <span style="color:#66d9ef">del</span> params[<span style="color:#e6db74">&#39;type&#39;</span>]
+    <span style="color:#66d9ef">if</span> regressor_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;gradient_boosting_regression&#39;</span>:
+        estimator <span style="color:#f92672">=</span> GradientBoostingRegressor(<span style="color:#f92672">**</span>params)
+    <span style="color:#66d9ef">elif</span> regressor_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;random_forest_regression&#39;</span>:
+        estimator <span style="color:#f92672">=</span> RandomForestRegressor(<span style="color:#f92672">**</span>params)
+    <span style="color:#66d9ef">elif</span> regressor_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;extra_trees_regression&#39;</span>:
+        estimator <span style="color:#f92672">=</span> ExtraTreesRegressor(<span style="color:#f92672">**</span>params)
+    <span style="color:#66d9ef">elif</span> regressor_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;decision_tree_regression&#39;</span>:
+        estimator <span style="color:#f92672">=</span> DecisionTreeRegressor(<span style="color:#f92672">**</span>params)
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>    
+    
+    estimator<span style="color:#f92672">.</span>fit(X_train, y_train)
+    
+    <span style="color:#75715e"># mae    </span>
+    y_dev_hat <span style="color:#f92672">=</span> estimator<span style="color:#f92672">.</span>predict(X_dev)
+    mae <span style="color:#f92672">=</span> median_absolute_error(y_dev, y_dev_hat)
+    
+    <span style="color:#75715e"># logging</span>
+    <span style="color:#66d9ef">with</span> mlflow<span style="color:#f92672">.</span>start_run():
+        mlflow<span style="color:#f92672">.</span>log_param(<span style="color:#e6db74">&#34;regressor&#34;</span>, estimator<span style="color:#f92672">.</span>__class__<span style="color:#f92672">.</span>__name__)
+        <span style="color:#75715e"># mlflow.log_param(&#34;params&#34;, params)</span>
+        mlflow<span style="color:#f92672">.</span>log_param(<span style="color:#e6db74">&#39;n_estimators&#39;</span>, params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;n_estimators&#39;</span>))
+        mlflow<span style="color:#f92672">.</span>log_param(<span style="color:#e6db74">&#39;max_depth&#39;</span>, params<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#39;max_depth&#39;</span>))
+        
+        mlflow<span style="color:#f92672">.</span>log_metric(<span style="color:#e6db74">&#34;median_absolute_error&#34;</span>, mae)  
+    
+    <span style="color:#66d9ef">return</span> {<span style="color:#e6db74">&#39;loss&#39;</span>: mae, <span style="color:#e6db74">&#39;status&#39;</span>: STATUS_OK}
+
+space <span style="color:#f92672">=</span> hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;regressor_type&#39;</span>, [    
+    {
+        <span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">&#39;gradient_boosting_regression&#39;</span>,
+        <span style="color:#e6db74">&#39;n_estimators&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;n_estimators1&#39;</span>, range(<span style="color:#ae81ff">100</span>,<span style="color:#ae81ff">200</span>,<span style="color:#ae81ff">50</span>)),
+        <span style="color:#e6db74">&#39;max_depth&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;max_depth1&#39;</span>, range(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">13</span>,<span style="color:#ae81ff">1</span>))
+    },
+    {
+        <span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">&#39;random_forest_regression&#39;</span>,
+        <span style="color:#e6db74">&#39;n_estimators&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;n_estimators2&#39;</span>, range(<span style="color:#ae81ff">100</span>,<span style="color:#ae81ff">200</span>,<span style="color:#ae81ff">50</span>)),
+        <span style="color:#e6db74">&#39;max_depth&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;max_depth2&#39;</span>, range(<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">25</span>,<span style="color:#ae81ff">1</span>)),
+        <span style="color:#e6db74">&#39;n_jobs&#39;</span>: <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+        
+    },
+    {
+        <span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">&#39;extra_trees_regression&#39;</span>,
+        <span style="color:#e6db74">&#39;n_estimators&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;n_estimators3&#39;</span>, range(<span style="color:#ae81ff">100</span>,<span style="color:#ae81ff">200</span>,<span style="color:#ae81ff">50</span>)),
+        <span style="color:#e6db74">&#39;max_depth&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;max_depth3&#39;</span>, range(<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">2</span>))
+    },
+    {
+        <span style="color:#e6db74">&#39;type&#39;</span>: <span style="color:#e6db74">&#39;decision_tree_regression&#39;</span>,
+        <span style="color:#e6db74">&#39;max_depth&#39;</span>: hp<span style="color:#f92672">.</span>choice(<span style="color:#e6db74">&#39;max_depth4&#39;</span>, range(<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">2</span>))
+    }
+])
+
+trials <span style="color:#f92672">=</span> Trials()
+max_evals <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>
+
+best <span style="color:#f92672">=</span> fmin(
+fn<span style="color:#f92672">=</span>objective, 
+space<span style="color:#f92672">=</span>space,
+algo<span style="color:#f92672">=</span>tpe<span style="color:#f92672">.</span>suggest,
+max_evals<span style="color:#f92672">=</span>max_evals,
+trials<span style="color:#f92672">=</span>trials)
+
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#34;Found minimum after {} trials:&#34;</span><span style="color:#f92672">.</span>format(max_evals))
+<span style="color:#f92672">from</span> pprint <span style="color:#f92672">import</span> pprint
+pprint(best)
+</code></pre></div><pre><code>100%|██████████| 40/40 [00:19&lt;00:00,  2.11trial/s, best loss: 8.569474762575908]
+Found minimum after 40 trials:
+{'max_depth2': 1, 'n_estimators2': 1, 'regressor_type': 1}
+</code></pre>
+<h1 id="evaluate-performance">Evaluate performance</h1>
+<p>Run &ldquo;mlflow server&rdquo; to see the loggin dashboard. There, we can see that RandomForestRegressor has the best performance (the less MAE the better) when using max_depth=4  and n_estimators=150, to test the model&rsquo;s performance against another test set:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># use best params on TEST set</span>
+estimator <span style="color:#f92672">=</span> RandomForestRegressor(max_depth<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, n_estimators<span style="color:#f92672">=</span><span style="color:#ae81ff">150</span>)
+estimator<span style="color:#f92672">.</span>fit(X_train, y_train)
+    
+y_train_hat <span style="color:#f92672">=</span> estimator<span style="color:#f92672">.</span>predict(X_train)
+train_mae <span style="color:#f92672">=</span> median_absolute_error(y_train, y_train_hat)
+
+y_dev_hat <span style="color:#f92672">=</span> estimator<span style="color:#f92672">.</span>predict(X_dev)
+dev_mae <span style="color:#f92672">=</span> median_absolute_error(y_dev, y_dev_hat)
+
+y_test_hat <span style="color:#f92672">=</span> estimator<span style="color:#f92672">.</span>predict(X_test)
+test_mae <span style="color:#f92672">=</span> median_absolute_error(y_test, y_test_hat)
+
+mae <span style="color:#f92672">=</span>  {
+    <span style="color:#e6db74">&#39;name&#39;</span>: estimator<span style="color:#f92672">.</span>__class__<span style="color:#f92672">.</span>__name__,
+    <span style="color:#e6db74">&#39;train_mae&#39;</span>: train_mae,
+    <span style="color:#e6db74">&#39;dev_mae&#39;</span>: dev_mae,
+    <span style="color:#e6db74">&#39;test_mae&#39;</span>: test_mae
+}
+
+mae <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame([mae])<span style="color:#f92672">.</span>set_index(<span style="color:#e6db74">&#39;name&#39;</span>)
+
+mae
+</code></pre></div><table>
+<thead>
+<tr>
+<th align="left">name</th>
+<th align="right">train_mae</th>
+<th align="right">dev_mae</th>
+<th align="right">test_mae</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">DecisionTreeRegressor</td>
+<td align="right">8.930245</td>
+<td align="right">8.592484</td>
+<td align="right">8.729826</td>
+</tr>
+</tbody>
+</table>
+<p>You&rsquo;ll notice that we use &ldquo;median absolute error&rdquo; to measure performance. There are other metrics available, such as mean squared error, but in some cases it&rsquo;s more meaningful to use a metric that measure the performance in actual data&rsquo;s unit, in this case the error on dev and test set are around 8 units away from its correct value. Since normally we use square meter for area, it means the prediction will be off by about 8 square meters in most cases.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Word-based analysis with song lyrics</title>
+            <link>kahnwong.github.io/posts/2020-04-16-word-based-analysis-with-song-lyrics/</link>
+            <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2020-04-16-word-based-analysis-with-song-lyrics/</guid>
+            <description>I listen to a lot of music, mostly symphonic heavy metal. What&amp;rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link here!</description>
+            <content type="html"><![CDATA[<p>I listen to a lot of music, mostly symphonic heavy metal. What&rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link <a href="https://github.com/kahnwong/lyrics_visualization">here</a>!</p>
+<h2 id="techniques-used">Techniques used:</h2>
+<ul>
+<li>tokenization</li>
+<li>stemming and lemming</li>
+<li>topic modeling</li>
+</ul>
+<h1 id="import-modules">Import modules</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> Counter
+
+<span style="color:#f92672">import</span> matplotlib.colors <span style="color:#f92672">as</span> colors
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> seaborn <span style="color:#f92672">as</span> sns
+<span style="color:#f92672">from</span> nltk <span style="color:#f92672">import</span> word_tokenize
+<span style="color:#75715e"># from nltk.corpus import stopwords</span>
+<span style="color:#f92672">from</span> nltk.stem <span style="color:#f92672">import</span> PorterStemmer
+<span style="color:#f92672">from</span> sklearn.decomposition <span style="color:#f92672">import</span> NMF, LatentDirichletAllocation
+<span style="color:#f92672">from</span> sklearn.feature_extraction.text <span style="color:#f92672">import</span> CountVectorizer, TfidfVectorizer
+
+sns<span style="color:#f92672">.</span>set()
+</code></pre></div><h1 id="import-data-generated-from-01_get_datapy">Import data generated from 01_get_data.py</h1>
+<p>In this step, I import raw data and convert raw year into a decade, for instance 1993 is in 1990s. I won&rsquo;t be doing analysis by decades, because in heavy metal it doesn&rsquo;t follow the trend much. But I include it here in case you are working on pop artists. In addition, the differences by year may not be that large, so it makes sense to see it in terms of decades.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#39;lyrics.csv&#39;</span>)
+
+<span style="color:#75715e"># dop song duplicates from the same artist</span>
+df<span style="color:#f92672">.</span>drop_duplicates(subset<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;artist&#39;</span>, <span style="color:#e6db74">&#39;title&#39;</span>], inplace<span style="color:#f92672">=</span>True)
+
+<span style="color:#75715e"># tokenize, remove stopwords, stemming and lemming</span>
+<span style="color:#75715e"># stop_words = set(stopwords.words(&#39;english&#39;))</span>
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;english.txt&#39;</span>, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    stop_words <span style="color:#f92672">=</span> [i<span style="color:#f92672">.</span>strip() <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> f<span style="color:#f92672">.</span>readlines()]
+    
+ps <span style="color:#f92672">=</span> PorterStemmer()
+df[<span style="color:#e6db74">&#39;tokens&#39;</span>] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>lyrics<span style="color:#f92672">.</span>apply(
+    <span style="color:#66d9ef">lambda</span> x: [ps<span style="color:#f92672">.</span>stem(w) 
+    <span style="color:#66d9ef">for</span> w <span style="color:#f92672">in</span> word_tokenize(x<span style="color:#f92672">.</span>lower()) 
+    <span style="color:#66d9ef">if</span> 
+         (<span style="color:#f92672">not</span> w <span style="color:#f92672">in</span> stop_words) <span style="color:#f92672">and</span>
+         (<span style="color:#f92672">not</span> <span style="color:#e6db74">&#34;&#39;&#34;</span> <span style="color:#f92672">in</span> w) <span style="color:#f92672">and</span>
+         (len(w) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span>)
+    ])
+
+<span style="color:#75715e"># count words</span>
+df[<span style="color:#e6db74">&#39;word_count&#39;</span>] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>tokens<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: len(x))
+
+<span style="color:#75715e"># count unique words</span>
+df[<span style="color:#e6db74">&#39;unique_word_count&#39;</span>] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>tokens<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: len(set(x)))
+
+<span style="color:#75715e"># remove outliers</span>
+df <span style="color:#f92672">=</span> df[df<span style="color:#f92672">.</span>word_count<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">10</span>]
+
+<span style="color:#75715e"># set decade</span>
+df[<span style="color:#e6db74">&#39;year&#39;</span>] <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>year<span style="color:#f92672">.</span>astype(int)
+df[<span style="color:#e6db74">&#39;1990s&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(
+                ((<span style="color:#ae81ff">1990</span><span style="color:#f92672">&lt;=</span>df<span style="color:#f92672">.</span>year) <span style="color:#f92672">&amp;</span> (df<span style="color:#f92672">.</span>year <span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">1999</span>)),
+                <span style="color:#e6db74">&#39;1990s&#39;</span>,
+                None
+            )
+
+df[<span style="color:#e6db74">&#39;2000s&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(
+                ((<span style="color:#ae81ff">2000</span><span style="color:#f92672">&lt;=</span>df<span style="color:#f92672">.</span>year) <span style="color:#f92672">&amp;</span> (df<span style="color:#f92672">.</span>year <span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">2009</span>)),
+                <span style="color:#e6db74">&#39;2000s&#39;</span>,
+                None
+            )
+
+df[<span style="color:#e6db74">&#39;2010s&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(
+                ((<span style="color:#ae81ff">2010</span><span style="color:#f92672">&lt;=</span>df<span style="color:#f92672">.</span>year) <span style="color:#f92672">&amp;</span> (df<span style="color:#f92672">.</span>year <span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">2019</span>)),
+                <span style="color:#e6db74">&#39;2010s&#39;</span>,
+                None
+            )
+
+df[<span style="color:#e6db74">&#39;2020s&#39;</span>] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>where(
+                ((<span style="color:#ae81ff">2020</span><span style="color:#f92672">&lt;=</span>df<span style="color:#f92672">.</span>year) <span style="color:#f92672">&amp;</span> (df<span style="color:#f92672">.</span>year <span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">2029</span>)),
+                <span style="color:#e6db74">&#39;2020s&#39;</span>,
+                None
+            )
+
+df[<span style="color:#e6db74">&#39;decade&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;1990s&#39;</span>]<span style="color:#f92672">.</span>combine_first(df[<span style="color:#e6db74">&#39;2000s&#39;</span>])<span style="color:#f92672">.</span>combine_first(df[<span style="color:#e6db74">&#39;2010s&#39;</span>])<span style="color:#f92672">.</span>combine_first(df[<span style="color:#e6db74">&#39;2020s&#39;</span>])
+
+<span style="color:#75715e"># drop unused columns</span>
+df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop(columns<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;1990s&#39;</span>, <span style="color:#e6db74">&#39;2000s&#39;</span>, <span style="color:#e6db74">&#39;2010s&#39;</span>, <span style="color:#e6db74">&#39;2020s&#39;</span>])
+
+df
+</code></pre></div><table>
+<thead>
+<tr>
+<th align="right"></th>
+<th align="left">artist</th>
+<th align="left">album</th>
+<th align="left">title</th>
+<th align="left">lyrics</th>
+<th align="right">year</th>
+<th align="left">tokens</th>
+<th align="right">word_count</th>
+<th align="right">unique_word_count</th>
+<th align="left">decade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right">0</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Elvenpath</td>
+<td align="left">(In the sh</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;shelter&rsquo;, &lsquo;shade&rsquo;, &lsquo;forest&rsquo;, &hellip;]</td>
+<td align="right">121</td>
+<td align="right">90</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">1</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Beauty And The Beast</td>
+<td align="left">Remember t</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;rememb&rsquo;, &lsquo;danc&rsquo;, &lsquo;share&rsquo;, &hellip;]</td>
+<td align="right">74</td>
+<td align="right">56</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">2</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">The Carpenter</td>
+<td align="left">Who are yo</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;condemn&rsquo;, &lsquo;shine&rsquo;, &lsquo;salvat&rsquo;, &hellip;]</td>
+<td align="right">74</td>
+<td align="right">42</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">3</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Astral Romance</td>
+<td align="left">A nocturna</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;nocturn&rsquo;, &lsquo;concerto&rsquo;, &lsquo;candlelight&rsquo;, &hellip;]</td>
+<td align="right">69</td>
+<td align="right">68</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">4</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Angels Fall First</td>
+<td align="left">An angelfa</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;angelfac&rsquo;, &lsquo;smile&rsquo;, &lsquo;headlin&rsquo;, &hellip;]</td>
+<td align="right">68</td>
+<td align="right">49</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">5</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Tutankhamen</td>
+<td align="left">As the sun</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;sun&rsquo;, &lsquo;set&rsquo;, &lsquo;pyramid&rsquo;, &hellip;]</td>
+<td align="right">67</td>
+<td align="right">41</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">6</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Nymphomaniac Fantasia</td>
+<td align="left">The scent</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;scent&rsquo;, &lsquo;woman&rsquo;, &lsquo;&hellip;']</td>
+<td align="right">29</td>
+<td align="right">28</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">7</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Know Why The Nightingale Sings</td>
+<td align="left">What does</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;fall&rsquo;, &lsquo;feel&rsquo;, &lsquo;boy&rsquo;, &hellip;]</td>
+<td align="right">49</td>
+<td align="right">47</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">8</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Lappi (Lapland)</td>
+<td align="left">Part 1: Er</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;erämaajärvi&rsquo;, &lsquo;kautta&rsquo;, &lsquo;erämaajärven&rsquo;, &hellip;]</td>
+<td align="right">63</td>
+<td align="right">54</td>
+<td align="left">1990s</td>
+</tr>
+<tr>
+<td align="right">9</td>
+<td align="left">Nightwish</td>
+<td align="left">Angels Fall First</td>
+<td align="left">Once Upon A Troubadour</td>
+<td align="left">A lonely b</td>
+<td align="right">1996</td>
+<td align="left">[&lsquo;lone&rsquo;, &lsquo;bard&rsquo;, &lsquo;wander&rsquo;, &hellip;]</td>
+<td align="right">91</td>
+<td align="right">62</td>
+<td align="left">1990s</td>
+</tr>
+</tbody>
+</table>
+<h1 id="explore-relationship">Explore relationship</h1>
+<p>From this plot, I can see that there is a correlation between <code>word_count</code> and <code>unique_word_count</code>, that is, they go in the same direction. The higher the word_count, the higher unique_word_count and vice versa.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g <span style="color:#f92672">=</span> sns<span style="color:#f92672">.</span>PairGrid(df[[<span style="color:#e6db74">&#39;word_count&#39;</span>, <span style="color:#e6db74">&#39;unique_word_count&#39;</span>]])
+g<span style="color:#f92672">.</span>map(plt<span style="color:#f92672">.</span>scatter)
+</code></pre></div><p><img src="/images/word-based-analysis-with-song-lyrics/02_visualize_7_1.png" alt="png"></p>
+<h1 id="boxplot">Boxplot</h1>
+<p>We can use either <code>word_count</code> or <code>unique_word_count</code>, since they go in the same direction, except the values from <code>unique_word_count</code> will be higher, but it is proportional to <code>word_count</code></p>
+<p>Boxplot represents data distribution in quartiles, in which the the box-y area is in middle of the distribution (think of a bell curve, the box-y area is right around the peak, padded a bit to left and right),  and the line-y area is the left/right edge of the curve. The scattered points are outliers, meaning they are too different from the rest of the dataset.</p>
+<p>From this figure, I can see that Nightwish has a very large outlier, seeing one data point is in 350 range. Myrath has the least words, and Linkin Park has the most. For Linkin Park, it can be attributed to the fact that their lyrics contain rap verses. As for Nightwish outliers, some of their songs contain very lengthy spoken parts.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plt<span style="color:#f92672">.</span>figure(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">7</span>))
+sns<span style="color:#f92672">.</span>boxplot(x<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;word_count&#34;</span>, y<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;artist&#34;</span>, data<span style="color:#f92672">=</span>df, orient<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;h&#39;</span>)
+</code></pre></div><p><img src="/images/word-based-analysis-with-song-lyrics/02_visualize_9_1.png" alt="png"></p>
+<h1 id="most-common-words">Most common words</h1>
+<p>In this step, I count how many times a word occur per dataset, then plot a bar graph for each. For the bands I usually listen to, each album has a theme, so it&rsquo;s very probable that each album would have different set of most common words.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">word_vector</span>(df):
+    <span style="color:#75715e">########## make a list of all unique words</span>
+    all_words <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> df<span style="color:#f92672">.</span>tokens:
+        all_words<span style="color:#f92672">.</span>extend(set(i))
+
+    all_words <span style="color:#f92672">=</span> set(all_words)
+    <span style="color:#75715e">########## make tf/idf</span>
+    word_count <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>tokens<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: Counter(x))
+    word_count <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(word_count<span style="color:#f92672">.</span>to_list())
+    <span style="color:#75715e">########## get sum for each unique word</span>
+    wordcount_sum <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> word_count<span style="color:#f92672">.</span>columns:
+        wordcount_sum<span style="color:#f92672">.</span>append({
+            <span style="color:#e6db74">&#39;word&#39;</span>: i,
+            <span style="color:#e6db74">&#39;count&#39;</span>: word_count[i]<span style="color:#f92672">.</span>sum()
+        })
+
+    wordcount_sum <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(wordcount_sum)
+    wordcount_sum <span style="color:#f92672">=</span> wordcount_sum[wordcount_sum[<span style="color:#e6db74">&#39;count&#39;</span>]<span style="color:#f92672">!=</span><span style="color:#ae81ff">0</span>]
+    wordcount_sum<span style="color:#f92672">.</span>sort_values(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;count&#39;</span>, ascending<span style="color:#f92672">=</span>False, inplace<span style="color:#f92672">=</span>True)
+    <span style="color:#75715e">##########</span>
+
+    <span style="color:#66d9ef">return</span> wordcount_sum<span style="color:#f92672">.</span>head(<span style="color:#ae81ff">10</span>)
+
+<span style="color:#75715e"># get wordcount for each group, this way the word_vector function is not getting messy</span>
+wordcount_group <span style="color:#f92672">=</span> []
+<span style="color:#75715e">################# adjust filters here</span>
+artist <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Epica&#39;</span>
+group <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;album&#39;</span> <span style="color:#75715e"># album, decade</span>
+<span style="color:#75715e">#################</span>
+df_temp <span style="color:#f92672">=</span> df[df<span style="color:#f92672">.</span>artist<span style="color:#f92672">==</span>artist]
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> df_temp[group]<span style="color:#f92672">.</span>unique():
+    chunk <span style="color:#f92672">=</span> word_vector(df_temp[df[group]<span style="color:#f92672">==</span>i])
+    chunk[group] <span style="color:#f92672">=</span> i
+    wordcount_group<span style="color:#f92672">.</span>append(chunk)
+
+wordcount_group <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(wordcount_group)
+
+<span style="color:#75715e"># plot</span>
+fig, axs <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(len(wordcount_group[group]<span style="color:#f92672">.</span>unique()), figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>,<span style="color:#ae81ff">53</span>)) <span style="color:#75715e"># adjust figure size here if it&#39;s too cramped</span>
+<span style="color:#66d9ef">for</span> index, i <span style="color:#f92672">in</span> enumerate(wordcount_group[group]<span style="color:#f92672">.</span>unique()):
+    temp <span style="color:#f92672">=</span> wordcount_group[wordcount_group[group]<span style="color:#f92672">==</span>i]
+    axs[index]<span style="color:#f92672">.</span>bar(temp[<span style="color:#e6db74">&#39;word&#39;</span>], temp[<span style="color:#e6db74">&#39;count&#39;</span>])
+    axs[index]<span style="color:#f92672">.</span>set_title(i)
+</code></pre></div><p><img src="/images/word-based-analysis-with-song-lyrics/02_visualize_11_1.png" alt="png"></p>
+<p>From the above image, you can see that the top words don&rsquo;t vary much between albums. So I can conclude that Epica have a consistent lyric themes, but if you listen you can hear that their melody changes every album. For instance, in The Divine Conspiracy, it&rsquo;s very classical and oriental oriented, but in The Holographic Principle it gets heavier.</p>
+<p>But that&rsquo;s only variations between albums from one artist. What if we do the same but with each artist instead?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">wordcount_group <span style="color:#f92672">=</span> []
+df_temp <span style="color:#f92672">=</span> df
+group <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;artist&#39;</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> df_temp[group]<span style="color:#f92672">.</span>unique():
+    chunk <span style="color:#f92672">=</span> word_vector(df_temp[df[group]<span style="color:#f92672">==</span>i])
+    chunk[group] <span style="color:#f92672">=</span> i
+    wordcount_group<span style="color:#f92672">.</span>append(chunk)
+
+wordcount_group <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>concat(wordcount_group)
+
+fig, axs <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(len(wordcount_group[group]<span style="color:#f92672">.</span>unique()), figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">13</span>,<span style="color:#ae81ff">80</span>)) <span style="color:#75715e"># adjust figure size here if it&#39;s too cramped</span>
+<span style="color:#66d9ef">for</span> index, i <span style="color:#f92672">in</span> enumerate(wordcount_group[group]<span style="color:#f92672">.</span>unique()):
+    temp <span style="color:#f92672">=</span> wordcount_group[wordcount_group[group]<span style="color:#f92672">==</span>i]
+    axs[index]<span style="color:#f92672">.</span>bar(temp[<span style="color:#e6db74">&#39;word&#39;</span>], temp[<span style="color:#e6db74">&#39;count&#39;</span>])
+    axs[index]<span style="color:#f92672">.</span>set_title(i)
+</code></pre></div><p><img src="/images/word-based-analysis-with-song-lyrics/02_visualize_14_0.png" alt="png"></p>
+<p>Whoops. Still more or less the same. But if you look carefully, Powerwolf stands out because their lyrical themes are werewolves and myths.</p>
+<h1 id="topic-modeling">Topic modeling</h1>
+<p>So I change the tactics a bit by using topic modeling instead of seeing just the top words count. This way, the model and extract group of words that said to be the essence belonging to each cluster. I use both NMF and LDA here for comparison. Here, I tell the model to read lyrics from four artists, then try to group into clusters and finding main words from each, but I&rsquo;m not telling it which document belongs to which artist.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">display_topics</span>(model, feature_names, no_top_words):
+    topic_words <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> topic_idx, topic <span style="color:#f92672">in</span> enumerate(model<span style="color:#f92672">.</span>components_):
+        <span style="color:#66d9ef">print</span> (<span style="color:#e6db74">&#34;Topic </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">:&#34;</span> <span style="color:#f92672">%</span> (topic_idx))
+        topic <span style="color:#f92672">=</span> (<span style="color:#e6db74">&#34; &#34;</span><span style="color:#f92672">.</span>join([feature_names[i] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> topic<span style="color:#f92672">.</span>argsort()[:<span style="color:#f92672">-</span>no_top_words <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]]))
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> topic)
+        topic_words<span style="color:#f92672">.</span>append(topic)
+        
+    <span style="color:#66d9ef">return</span> topic_words
+
+<span style="color:#75715e"># define temp dataframe here</span>
+temp <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;artist == &#34;Visions of Atlantis&#34; or</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">                artist == &#34;Lacuna Coil&#34; or</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">                artist == &#34;Epica&#34; or</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">                artist == &#34;Nightwish&#34;&#39;</span>)
+
+<span style="color:#75715e"># define parameters</span>
+no_features <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+no_topics <span style="color:#f92672">=</span> len(temp<span style="color:#f92672">.</span>artist<span style="color:#f92672">.</span>unique()) <span style="color:#75715e"># set album count as number of topics</span>
+no_top_words <span style="color:#f92672">=</span> <span style="color:#ae81ff">15</span>
+
+<span style="color:#75715e"># create word matrix</span>
+tfidf_vectorizer <span style="color:#f92672">=</span> TfidfVectorizer(max_df<span style="color:#f92672">=</span><span style="color:#ae81ff">0.95</span>, min_df<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, max_features<span style="color:#f92672">=</span>no_features, stop_words<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;english&#39;</span>)
+tfidf <span style="color:#f92672">=</span> tfidf_vectorizer<span style="color:#f92672">.</span>fit_transform(temp<span style="color:#f92672">.</span>lyrics)
+tfidf_feature_names <span style="color:#f92672">=</span> tfidf_vectorizer<span style="color:#f92672">.</span>get_feature_names()
+
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;========== NMF ==========&#39;</span>)
+nmf <span style="color:#f92672">=</span> NMF(n_components<span style="color:#f92672">=</span>no_topics, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, alpha<span style="color:#f92672">=.</span><span style="color:#ae81ff">1</span>, l1_ratio<span style="color:#f92672">=.</span><span style="color:#ae81ff">5</span>, init<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;nndsvd&#39;</span>)<span style="color:#f92672">.</span>fit(tfidf)
+topic_words <span style="color:#f92672">=</span> display_topics(nmf, tfidf_feature_names, no_top_words)
+</code></pre></div><pre><code>========== NMF ==========
+Topic 0:
+    ll time life way light come live free just feel inside ve day let world
+Topic 1:
+    love heart night wish forever hate soul dream oh art rest heaven need kiss lust
+Topic 2:
+    away run far stay inside journey dream fade just wash felt destruction escape falling walked
+Topic 3:
+    don know wanna want just feel say care hate goes cause liar let look reason
+</code></pre>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(<span style="color:#e6db74">&#39;========== LDA ==========&#39;</span>)
+
+lda <span style="color:#f92672">=</span> LatentDirichletAllocation(n_components<span style="color:#f92672">=</span>no_topics, max_iter<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, learning_method<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;online&#39;</span>, learning_offset<span style="color:#f92672">=</span><span style="color:#ae81ff">50.</span>,random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)<span style="color:#f92672">.</span>fit(tfidf)
+topic_words <span style="color:#f92672">=</span> display_topics(lda, tfidf_feature_names, no_top_words)
+</code></pre></div><pre><code>========== LDA ==========
+Topic 0:
+    distance don beautiful let today cold look guide read world way faith wish mind heart
+Topic 1:
+    est tale feels talking drives wall wishmaster disciple bone mad searching free master apprentice sing
+Topic 2:
+    love heart ll hearts time world fight let come night know shadows try eyes mind
+Topic 3:
+    leaving ll healing endless sed died walk desire life nos ne moment die nostra like
+</code></pre>
+<p>From NMF, I can tell that:</p>
+<ul>
+<li>Topic 0 is Epica</li>
+<li>Topic 1 is Nightwish</li>
+<li>Topic 2 is Visions of Atlantis</li>
+<li>Topic 3 is Lacuna Coil</li>
+</ul>
+<p>I think NMF performs better in this case 😆</p>
+<p>There are some instances LDA performs better, but generally unless it&rsquo;s very obvious from the start, sometimes you use different models and see which performs best for a given dataset.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>อยู่เมืองไทยกินกลูเตนไม่ได้ช่างลำบาก</title>
+            <link>kahnwong.github.io/posts/2020-01-27-%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</link>
+            <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2020-01-27-%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</guid>
+            <description>เดี๋ยวนี้หันไปทางไหนก็เห็นแต่กระแสกลูเต็นฟรี นี่มองละเบะปากเพราะเกือบทั้งหมดฉันกินไม่ได้ จะไปกินได้ยังไงในเมื่อพวกนี้มันกะอัพราคากับมนุษย์ที่หลงกระแส ไม่ได้ทำมาให้พวกคนที่กินกลูเตนไม่ได้จริงๆ กิน
+แล้วอย่าคิดว่าอ่านฉลากดีๆ แล้วจะรอด เพราะฉลากอาหารไทยนั้นลึก ลึกมากจนฉันเข้าไม่ถึง ตัวอย่างเบาะๆ ก็เช่น:
+ หมูหมักซีอิ้ว แจ้งแค่ว่ามีถั่วเหลือง (ซีอิ้วหมักกับแป้งสาลี) ฉลากแปะช็อคโกแลตนำเข้า ที่ฉลากต้นทางเขียนว่ามีสารก่อภูมิแพ้สี่ห้าอย่างได้ ฉลากไทยเขียนแค่สอง และแน่นอนว่ากลูเตนไม่ค่อยโผล่ในฉลากไทย ต่อให้ฉลากต้นทางมันจะเขียนตัวหนามาก็ตาม  ที่ลำไยกว่าคือ ครั้นจะโทรถามโรงงานผลิตนี่ก็ต้องมาลุ้นอีกว่าเค้าจะรู้งานดีแค่ไหน บางทีแจ็คพอตพนักงานมีคุณภาพก็รอดไป แต่ส่วนใหญ่เจอน้อย ส่วนมากจะตอบแบบขอไปที ตอบแบบส่งๆ หรือไม่โทรกลับเลยก้มี (และแน่นอนว่าฉันจดชื่อบริษัทขึ้นบัญชีหนังหมาไว้แล้ว)
+ที่เจอสดๆ วันนี้เลยก็คือ โทรไปถามโรงงานปลากระป๋องว่า ฉลากแจ้งกลูเตนสองระดับมั้ย ระดับแรกคือ ใส่ส่วนผสมนี้ลงไปในผลิตภัณฑ์จริงๆ ระดับสองคือ อาจจะมีส่วนผสมของ&amp;hellip;. มาจากการะบวนการผลิตที่ใช้อุปกรณ์ร่วมกัน ที่ถามแบบนี้เพราะว่า การแจ้ง &amp;ldquo;อาจจะมีส่วนผสมของ&amp;hellip;&amp;rdquo; ไม่ได้ทำกันทุกที่ และต่อให้ทำก็ใช่ว่าจะแจ้งกลูเตนกัน
+มันพีคตรงที่พอพนง.ฟังแล้วก็บอกเลยว่า ผลิตภัณฑ์เราไม่มีกลูเตนเลย ในใจนี่เริ่มเดือดละ วันก่อนเห็นเต็มสองตาว่ามีทูน่าหมักซีอิ๊วญี่ปุ่น ฉลากแจ้งด้วยนะว่ามีแป้งสาลี อ่ะนี่ก็บอกให้ทางนั้นไปเช็คมา
+สามชั่วโมงผ่านไป พนง.โทรกลับมาแจ้งว่า ทางบริษัทมีการแจ้งกลูเตนจากโชยุ แต่ประทานโทษ นั่นไม่ใช่คำถามฉัน นี่ต้องจี้แล้วจี้อีก ทางนั้นบทจะหนีก็ไล่ให้ไปอ่านฉลาก ถ้าอ่านมาจนถึงตรงนี้คิดว่าหลายๆ คนคงดูออกว่า ถ้าฉลากมันเชื่อถือได้ฉันคงไม่เสียค่าโทรศัพท์นั่งโทรถามหรอก เปลืองตังแถมเสียเวลาอีก สุดท้ายเลยจี้ถามว่า ถ้ามีผลิตภัณฑ์ ก ที่มีกลูเตน และผลิตภัณฑ์ ข ที่ไม่มีกลูเตน แต่ใช้สายผลิตร่วมกัน มีการตรวจสอบปริมาณกลูเตนตกค้างมั้ยว่าเจอเท่าไหร่ ทางนั้นก็ไปให้คนอ่านกล่องตัวทดสอบกลูเตนมา สรุปว่าฉันกินได้อย่างสบายใจถ้าไม่เจอคำว่า กลูเตน หรือ แป้งสาลีบนฉลาก</description>
+            <content type="html"><![CDATA[<p>เดี๋ยวนี้หันไปทางไหนก็เห็นแต่กระแสกลูเต็นฟรี นี่มองละเบะปากเพราะเกือบทั้งหมดฉันกินไม่ได้ จะไปกินได้ยังไงในเมื่อพวกนี้มันกะอัพราคากับมนุษย์ที่หลงกระแส ไม่ได้ทำมาให้พวกคนที่กินกลูเตนไม่ได้จริงๆ กิน</p>
+<p>แล้วอย่าคิดว่าอ่านฉลากดีๆ แล้วจะรอด เพราะฉลากอาหารไทยนั้นลึก ลึกมากจนฉันเข้าไม่ถึง ตัวอย่างเบาะๆ ก็เช่น:</p>
+<ul>
+<li>หมูหมักซีอิ้ว แจ้งแค่ว่ามีถั่วเหลือง (ซีอิ้วหมักกับแป้งสาลี)</li>
+<li>ฉลากแปะช็อคโกแลตนำเข้า ที่ฉลากต้นทางเขียนว่ามีสารก่อภูมิแพ้สี่ห้าอย่างได้ ฉลากไทยเขียนแค่สอง และแน่นอนว่ากลูเตนไม่ค่อยโผล่ในฉลากไทย ต่อให้ฉลากต้นทางมันจะเขียนตัวหนามาก็ตาม</li>
+</ul>
+<p>ที่ลำไยกว่าคือ ครั้นจะโทรถามโรงงานผลิตนี่ก็ต้องมาลุ้นอีกว่าเค้าจะรู้งานดีแค่ไหน บางทีแจ็คพอตพนักงานมีคุณภาพก็รอดไป แต่ส่วนใหญ่เจอน้อย ส่วนมากจะตอบแบบขอไปที ตอบแบบส่งๆ หรือไม่โทรกลับเลยก้มี (และแน่นอนว่าฉันจดชื่อบริษัทขึ้นบัญชีหนังหมาไว้แล้ว)</p>
+<p>ที่เจอสดๆ วันนี้เลยก็คือ โทรไปถามโรงงานปลากระป๋องว่า ฉลากแจ้งกลูเตนสองระดับมั้ย ระดับแรกคือ ใส่ส่วนผสมนี้ลงไปในผลิตภัณฑ์จริงๆ ระดับสองคือ อาจจะมีส่วนผสมของ&hellip;. มาจากการะบวนการผลิตที่ใช้อุปกรณ์ร่วมกัน ที่ถามแบบนี้เพราะว่า การแจ้ง &ldquo;อาจจะมีส่วนผสมของ&hellip;&rdquo; ไม่ได้ทำกันทุกที่ และต่อให้ทำก็ใช่ว่าจะแจ้งกลูเตนกัน</p>
+<p>มันพีคตรงที่พอพนง.ฟังแล้วก็บอกเลยว่า ผลิตภัณฑ์เราไม่มีกลูเตนเลย ในใจนี่เริ่มเดือดละ วันก่อนเห็นเต็มสองตาว่ามีทูน่าหมักซีอิ๊วญี่ปุ่น ฉลากแจ้งด้วยนะว่ามีแป้งสาลี อ่ะนี่ก็บอกให้ทางนั้นไปเช็คมา</p>
+<p>สามชั่วโมงผ่านไป พนง.โทรกลับมาแจ้งว่า ทางบริษัทมีการแจ้งกลูเตนจากโชยุ แต่ประทานโทษ นั่นไม่ใช่คำถามฉัน นี่ต้องจี้แล้วจี้อีก ทางนั้นบทจะหนีก็ไล่ให้ไปอ่านฉลาก ถ้าอ่านมาจนถึงตรงนี้คิดว่าหลายๆ คนคงดูออกว่า ถ้าฉลากมันเชื่อถือได้ฉันคงไม่เสียค่าโทรศัพท์นั่งโทรถามหรอก เปลืองตังแถมเสียเวลาอีก สุดท้ายเลยจี้ถามว่า ถ้ามีผลิตภัณฑ์ ก ที่มีกลูเตน และผลิตภัณฑ์ ข ที่ไม่มีกลูเตน แต่ใช้สายผลิตร่วมกัน มีการตรวจสอบปริมาณกลูเตนตกค้างมั้ยว่าเจอเท่าไหร่ ทางนั้นก็ไปให้คนอ่านกล่องตัวทดสอบกลูเตนมา สรุปว่าฉันกินได้อย่างสบายใจถ้าไม่เจอคำว่า กลูเตน หรือ แป้งสาลีบนฉลาก</p>
+<p>เนี่ย เสียเวลานั่งโทรกับรอคำตอบ แล้วใช่ว่าจะเป็นแบบนี้ที่เดียว นี่ถือว่าไวนะสามชั่วโมงน่ะ บางทีรอเป็นอาทิตย์ก็มี</p>
+<p>เรื่องนี้สอนให้รู้ว่า สุขภาพของประชาชนหน่วยงานใดๆ ก็ไม่แคร์ ตนเป็นที่พึ่งแห่งตนเท่านั้น</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>My diet is not for you to market it as healthy</title>
+            <link>kahnwong.github.io/posts/2020-01-12-my-diet-is-not-for-you-to-market-it-as-healthy/</link>
+            <pubDate>Sun, 12 Jan 2020 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2020-01-12-my-diet-is-not-for-you-to-market-it-as-healthy/</guid>
+            <description>Assuming you&amp;rsquo;re from the Anglosphere or live in trendy neighborhoods, you will see a lot of places offering gluten-free options and slapping &amp;ldquo;healthy&amp;rdquo; label on it. The problem arises when restauraners see the opportunity to cash in the gluten-free wave and start offering gluten-free options. This is an issue because, gluten-free is not just eliminating wheat, barley, rye or oat. It&amp;rsquo;s more than that.
+If you bake pizza using gluten-free flour in the same oven as regular pizza, it is considered cross-contaminated from floating flour dust in the air and some flour bits sticking to the oven, meaning it would contain gluten even if you use gluten-free flour.</description>
+            <content type="html"><![CDATA[<p>Assuming you&rsquo;re from the Anglosphere or live in trendy neighborhoods, you will see a lot of places offering gluten-free options and slapping &ldquo;healthy&rdquo; label on it. The problem arises when restauraners see the opportunity to cash in the gluten-free wave and start offering gluten-free options. This is an issue because, gluten-free is not just eliminating wheat, barley, rye or oat. It&rsquo;s more than that.</p>
+<p>If you bake pizza using gluten-free flour in the <strong>same</strong> oven as regular pizza, it is considered <em>cross-contaminated</em> from floating flour dust in the air and some flour bits sticking to the oven, meaning it would contain gluten even if you use gluten-free flour.</p>
+<p>Cross-contamination can happen a lot, and is hard to keep track of. A rule of thumb is to use separate set of cookwares when making gluten-free dishes. This is why people who cannot eat gluten rarely eat out - because it&rsquo;s very hard to find truly gluten-free places.</p>
+<p>I&rsquo;ve never heard of nut-free dishes as being healthy, or seafood-free dishes for the matter. So I guess they just see gluten as a fancy term and try to cash in the novelty. This wouldn&rsquo;t even be an issue if they actually make legit gluten-free food, instead we get half-baked gluten-free options that people like me can&rsquo;t eat without getting sick just so they can charge more.</p>
+<p>And think about it: to parade a diet for life-threatening illness as healthy, that&rsquo;s very inconsiderate - that you only recognize gluten-free diet as being healthy, whereas for some people it&rsquo;s the only way they can continue to live.</p>
+<p>If you ask me who&rsquo;s to blame, I would say the marketers. They need to cash in the fad, that&rsquo;s fine for me. But they did it in a very half-assed way, completely throwing people who really need to eat gluten-free under the bus.</p>
+<p>Note that I make a distinction between promoting a bakery as &ldquo;made from rice flour&rdquo; or &ldquo;made from gluten-free flour.&rdquo; The former may contain gluten due to cross-contamination, the latter has to be truly gluten-free. But I&rsquo;m hoping too much, seeing these marketing terms are interchangable these days.</p>
+<p>So what am I going to do about this? Nothing. I can&rsquo;t do anything except writing about this so people might know what gluten fad is like from our perspective. On the plus side, there are more gluten-free grocery options, and luckily the labels are mostly trustworthy. You win some, you lose some, such is how life works.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>ความน่าปวดหัวของการถอดอักษรไทยเป็นตัวโรมัน</title>
+            <link>kahnwong.github.io/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</link>
+            <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</guid>
+            <description>English Version
+*ตัวโรมัน = a b c d e f g &amp;hellip;
+วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:
+   Thai Romanization Romanization System Pronunciation Source     เทเวศ The-wet RTGS Tae-wet Pali-Sanskrit   สุวรรณภูมิ Suvarnabhumi Devanagari transliteration Su-wan*-na-poom *&amp;lsquo;a&amp;rsquo; as in father Pali-Sanskrit   ดินแดง Din-daeng RTGS Din-daeng Thai   ศรีราชา Sri Racha Mixed:__Sri__ - Devanagari transliteration__Racha__ - RTGS See-ra-cha Pali-Sanskrit    จะเห็นได้ว่าคำที่ต้นทางมาจากภาษาเดียวกันยังใช้คนละระบบในการถอดอักษรซะงั้น ที่เหนือกว่านั้นคือคำที่มาจาก บาลี-สันสกฤต นี่ก็ดันใช้ทั้งสองระบบถอดเสียงดื้อๆ โดยที่ไม่แคร์ว่าต่างชาติจะงงเบอร์ไหน</description>
+            <content type="html"><![CDATA[<p><a href="kahnwong.github.io/posts/2017-09-15-the-confusing-case-of-thai-romanization-system/">English Version</a></p>
+<p>*ตัวโรมัน = a b c d e f g &hellip;</p>
+<p>วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<table>
+<thead>
+<tr>
+<th>Thai</th>
+<th>Romanization</th>
+<th>Romanization System</th>
+<th>Pronunciation</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>เทเวศ</td>
+<td>The-wet</td>
+<td>RTGS</td>
+<td>Tae-wet</td>
+<td>Pali-Sanskrit</td>
+</tr>
+<tr>
+<td>สุวรรณภูมิ</td>
+<td>Suvarnabhumi</td>
+<td>Devanagari transliteration</td>
+<td>Su-wan*-na-poom <!-- raw HTML omitted -->*&lsquo;a&rsquo; as in father</td>
+<td>Pali-Sanskrit</td>
+</tr>
+<tr>
+<td>ดินแดง</td>
+<td>Din-daeng</td>
+<td>RTGS</td>
+<td>Din-daeng</td>
+<td>Thai</td>
+</tr>
+<tr>
+<td>ศรีราชา</td>
+<td>Sri Racha</td>
+<td>Mixed:<!-- raw HTML omitted -->__Sri__ - Devanagari transliteration<!-- raw HTML omitted -->__Racha__ - RTGS</td>
+<td>See-ra-cha</td>
+<td>Pali-Sanskrit</td>
+</tr>
+</tbody>
+</table>
+<p>จะเห็นได้ว่าคำที่ต้นทางมาจากภาษาเดียวกันยังใช้คนละระบบในการถอดอักษรซะงั้น ที่เหนือกว่านั้นคือคำที่มาจาก บาลี-สันสกฤต นี่ก็ดันใช้ทั้งสองระบบถอดเสียงดื้อๆ โดยที่ไม่แคร์ว่าต่างชาติจะงงเบอร์ไหน</p>
+<h3 id="ยอนอดตนดนง">ย้อนอดีตนิดนึง</h3>
+<p>คำบาลี-สันสกฤตมีการนำมาใช้ในภาษาไทยเมื่อนานมาแล้ว ผ่านการเผยแพร่ของศาสนาพราหมณ์-ฮินดูในอุษาอาคเนย์</p>
+<h3 id="ตรงนเรมนาเบอละ-แตอานหนอยกด">ตรงนี้เริ่มน่าเบื่อล่ะ แต่อ่านหน่อยก็ดี</h3>
+<p>คนบางกลุ่มพอใจที่จะใช้การถอดอักษรแบบราชบัณฑิตกับคำที่มาจาก บาลี-สันสกฤต แต่ต้องเน้นย้ำว่าการถอดอักษรแบบเทวนาครี สามารถแปลงกลับเป็นอักขระไทยได้แบบ 100% ในขณะที่การถอดอักษรแบบราชบัณฑิตจะไม่สามารถแปลงที่ถอดเป็นตัวโรมันกลับเป็นตัวไทยได้อย่างสมบูรณ์ ยกเว้นเสียแต่ว่ารู้กันอยู่แล้วว่ามันคือคำอะไร ก็เลยเขียนเป็นตัวไทยถูก</p>
+<p>เพราะฉะนั้น มันเลยกลายเป็นว่าการถอดแบบราชบัณฑิตเป็นความพยายามที่จะเก็บรูปแบบการสะกดคำไทยเอาไว้ แต่มันไม่ได้สอดคล้องกับการออกเสียงของคำนั้นจริงๆ</p>
+<h3 id="สรป">สรุป</h3>
+<p>ไทยใช้ระบบราชบัณฑิตยสถานในการถอดอักขระเป็นโรมัน แต่ปัญหาคือมันไม่สามารถแปลงกลับเป็นตัวไทยได้อย่างสมบูรณ์ แต่ถ้าถอดอักษรคำที่มาจากบาลี-สันสกฤตโดยใช้ระบบเทวนาครีก็ติดประเด็นเดิมคือมันไม่ได้สอดคล้องกับการออกเสียงจริงๆ</p>
+<h3 id="ของแถม">ของแถม</h3>
+<p>จะลืมพูดถึงระบบการถอดอักษรอีกแบบไม่ได้ นั่นก็คือ: ฉันจะสะกดตามใจฉัน</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Loanwords are okay</title>
+            <link>kahnwong.github.io/posts/2019-11-07-loanwords-are-okay/</link>
+            <pubDate>Thu, 07 Nov 2019 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2019-11-07-loanwords-are-okay/</guid>
+            <description>Does it matter if you language has a lot of loanwords? To be considered a loan, it has to be of foreign origin, and speakers from the borrowing end can understand and use in various contexts. It&amp;rsquo;s perfectly okay for the meaning to shift on the borrowing end, as semantic shift happens naturally. It does not make the word &amp;ldquo;unpure&amp;rdquo; or anything, it&amp;rsquo;s just how things happen. The borrowing language may have different point of view or context, so not all properties from the source can be carried over.</description>
+            <content type="html"><![CDATA[<p>Does it matter if you language has a lot of loanwords? To be considered a loan, it has to be of foreign origin, and speakers from the borrowing end can understand and use in various contexts. It&rsquo;s perfectly okay for the meaning to shift on the borrowing end, as semantic shift happens naturally. It does not make the word &ldquo;unpure&rdquo; or anything, it&rsquo;s just how things happen. The borrowing language may have different point of view or context, so not all properties from the source can be carried over. This phenomenon has been going on since antiquity, where people from different groups interacting with each other. Consider the following loan:</p>
+<p><strong>Freshy</strong> - <em>n</em>. a college freshman</p>
+<p>In English, a first year college student is known as a freshman. In Thailand, the term freshy is used instead. Does it deteriorate English in any way? No, because English does the same to many loans. Thai is not the only guilty party. Not that I&rsquo;m implying there&rsquo;s anything wrong with it.</p>
+<p>Loanwords also enrich a language by providing new concepts and ideas. Loanwords are not evil. But some people would have you believe that loanwords must be eradicated to keep a language pure. French tries to do this and fail miserably. Influx of new loans through mass media and internet are coming through faster than The Académie française can process and dissimenate the French version to the public.</p>
+<p>Who are they to think they can curb the wax and wane of French language. People speak however they want. What is correct and standard then sound foreign to our modern-day ears. What sounds natural to us today may be ancient history to a few generations later. Languages always change. It doesn&rsquo;t only when no one uses it anymore - like Latin.</p>
+<p>Just like food, many people like Japanese food - sushi, gyoza, to name a few. Foreign doesn&rsquo;t mean bad. Just that some people want you to think it is.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Indic name mistransliteration in Thai version of Harry Potter</title>
+            <link>kahnwong.github.io/posts/2018-10-11-indic-name-mistransliteration-in-thai-version-of-harry-potter/</link>
+            <pubDate>Thu, 11 Oct 2018 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2018-10-11-indic-name-mistransliteration-in-thai-version-of-harry-potter/</guid>
+            <description>I read Harry Potter as a kid, and I couldn&amp;rsquo;t shake the feeling that one character&amp;rsquo;s name is a bit off. I couldn&amp;rsquo;t quite pinpoint exactly why. Turns out, my hunch was right – the Thai translator used the wrong transliteration.
+In Thai, &amp;ldquo;Parvati Patil&amp;rdquo; is &amp;ldquo;ปาราวตี พาติล.&amp;rdquo; This doesn&amp;rsquo;t even match the English transliteration (from Indic), as seen by a completely messed up second syllable on the first name. Because Thai language has a lot of influences from Indic, we also have our own system of transliterating Indic to Thai.</description>
+            <content type="html"><![CDATA[<p>I read Harry Potter as a kid, and I couldn&rsquo;t shake the feeling that one character&rsquo;s name is a bit off. I couldn&rsquo;t quite pinpoint exactly why. Turns out, my hunch was right – the Thai translator used the wrong transliteration.</p>
+<p>In Thai, &ldquo;Parvati Patil&rdquo; is &ldquo;ปาราวตี พาติล.&rdquo; This doesn&rsquo;t even match the English transliteration (from Indic), as seen by a completely messed up second syllable on the first name. Because Thai language has a lot of influences from Indic, we also have our own system of transliterating Indic to Thai. Using this system, the correct transliteration for &ldquo;Parvati&rdquo; is &ldquo;ปารวตี&rdquo; (the second <em>a</em> is a schwa). As for the last name &ldquo;Patil,&rdquo; it&rsquo;s &ldquo;ปาฏีล.&rdquo;</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<table>
+<thead>
+<tr>
+<th>Romanization</th>
+<th>Devanagari</th>
+<th>Thai (wrong)</th>
+<th>Thai (correct)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parvati</td>
+<td>पार्वती</td>
+<td>ปาราวตี</td>
+<td>ปารวตี</td>
+</tr>
+<tr>
+<td>Patil</td>
+<td>पाटील</td>
+<td>พาติล</td>
+<td>ปาฏีล</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that the first character from the first name in Devanagari are the same, which means the Thai transliteration is wrong (ป in first name and พ in last name).</p>
+<p>What a far cry from the kosher transliteration. But how could you blame the Thai translator? She specializes in English after all, not Indic. To me, she tried her best to get around transliterating a name she isn&rsquo;t even familiar with, let alone know of an existing system to transliterate it.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Definition of &#39;a Word&#39;</title>
+            <link>kahnwong.github.io/posts/2018-07-31-definition-of-a-word/</link>
+            <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2018-07-31-definition-of-a-word/</guid>
+            <description>You often hear people say &amp;ldquo;you need to know x words in y language to be able to understand basic conversations.&amp;rdquo;. This is a bit misleading, since the definition of &amp;ldquo;word&amp;rdquo; is varied. For example, in Chinese (yes, I know, Chinese as a language doesn&amp;rsquo;t exist, but I digress) one character (one block) is one word. So this is easy. Then you have Japanese, where the same kanji (Hanzi, Chinese characters) can be pronounced differently, each with different meaning.</description>
+            <content type="html"><![CDATA[<p>You often hear people say &ldquo;you need to know x words in y language to be able to understand basic conversations.&rdquo;. This is a bit misleading, since the definition of &ldquo;word&rdquo; is varied. For example, in Chinese (yes, I know, Chinese as a language doesn&rsquo;t exist, but I digress) one character (one block) is one word. So this is easy. Then you have Japanese, where the same kanji (Hanzi, Chinese characters) can be pronounced differently, each with different meaning. You would assume Korean is the same way, right? That one &ldquo;block&rdquo; is one character. It is not the case, however. Korean is agglutinative language, which means you can stack suffixes just like Finnish and Turkish to morph a word.</p>
+<p>Then you have English, which is quite clear how a word can be counted because it has space. What about languages that write words together without space? One could argue that Thai is like Chinese, that it has no conjugations and you can append a bunch of words together to form a sentence. The difference is in Thai, you would have to mentally break up each word. For example, the &ldquo;word&rdquo; &ldquo;ตากลม&rdquo; can be separated two ways: &ldquo;ตาก-ลม&rdquo; and &ldquo;ตา-กลม,&rdquo; again, with different meaning.</p>
+<p>And in Semitic languages, words are based on tri-root system, where you put consonants into a vowel pattern to conjugate. Speaking of conjugations, run, running and runner are from the same root, but would you consider them different words?</p>
+<p>As you can see, how a word is defined is different. Some may argue different conjugations is enough to make it a new word. So if you know basic conjugations, say, five of them, and you know five root words. Now you know 25 words. Yay! Right?</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Resettled refugees in Sweden</title>
+            <link>kahnwong.github.io/posts/2018-07-31-resettled-refugees-in-sweden/</link>
+            <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2018-07-31-resettled-refugees-in-sweden/</guid>
+            <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
+In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
+            <content type="html"><![CDATA[<p>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.</p>
+<p>In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">%</span>matplotlib inline
+</code></pre></div><p>The next step is to clean up the dataframe for further analysis. The steps are:</p>
+<ul>
+<li>Read csv</li>
+<li>Group by origin country and year resettled</li>
+<li>Remove destination country column (because it&rsquo;s the same value)</li>
+<li>Remove non-integer values (because you can&rsquo;t do math magic with it)</li>
+<li>Convert year and value to integer (hello, math magic)</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># data prep</span>
+df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>read_csv(<span style="color:#e6db74">&#39;unhcr_resettlement_residence_swe.csv&#39;</span>)[<span style="color:#ae81ff">1</span>:]
+df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>groupby([<span style="color:#e6db74">&#39;Origin&#39;</span>, <span style="color:#e6db74">&#39;Year&#39;</span>], as_index<span style="color:#f92672">=</span>False)<span style="color:#f92672">.</span>sum() <span style="color:#75715e"># group by two columns</span>
+df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Country / territory of asylum/residence&#39;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#75715e"># drop destination country column</span>
+df <span style="color:#f92672">=</span> df[(df <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;*&#39;</span>)<span style="color:#f92672">.</span>all(<span style="color:#ae81ff">1</span>)] <span style="color:#75715e"># remove any rows that has &#39;*&#39; value</span>
+df<span style="color:#f92672">.</span>Year <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>Year<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int64) <span style="color:#75715e"># convert year to int</span>
+df<span style="color:#f92672">.</span>Value <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>Value<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int64) <span style="color:#75715e"># convert value to int</span>
+
+df
+</code></pre></div><!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Origin</th>
+<th>Year</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Afghanistan</td>
+<td>1984</td>
+<td>7</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Afghanistan</td>
+<td>1985</td>
+<td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Afghanistan</td>
+<td>1986</td>
+<td>4</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Afghanistan</td>
+<td>1987</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Afghanistan</td>
+<td>1988</td>
+<td>1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Afghanistan</td>
+<td>1991</td>
+<td>2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Afghanistan</td>
+<td>1992</td>
+<td>18</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Afghanistan</td>
+<td>1997</td>
+<td>1</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Afghanistan</td>
+<td>1998</td>
+<td>5</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Afghanistan</td>
+<td>1999</td>
+<td>16</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Afghanistan</td>
+<td>2000</td>
+<td>339</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Afghanistan</td>
+<td>2001</td>
+<td>270</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Afghanistan</td>
+<td>2002</td>
+<td>156</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Afghanistan</td>
+<td>2003</td>
+<td>244</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Afghanistan</td>
+<td>2004</td>
+<td>314</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Afghanistan</td>
+<td>2005</td>
+<td>183</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Afghanistan</td>
+<td>2006</td>
+<td>353</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Afghanistan</td>
+<td>2007</td>
+<td>185</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Afghanistan</td>
+<td>2008</td>
+<td>414</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Afghanistan</td>
+<td>2009</td>
+<td>318</td>
+</tr>
+<tr>
+<td>20</td>
+<td>Afghanistan</td>
+<td>2010</td>
+<td>336</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Afghanistan</td>
+<td>2011</td>
+<td>404</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Afghanistan</td>
+<td>2012</td>
+<td>438</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Afghanistan</td>
+<td>2013</td>
+<td>219</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Afghanistan</td>
+<td>2014</td>
+<td>328</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Afghanistan</td>
+<td>2015</td>
+<td>222</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Afghanistan</td>
+<td>2016</td>
+<td>20</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Albania</td>
+<td>1991</td>
+<td>1</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Albania</td>
+<td>1992</td>
+<td>1</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Albania</td>
+<td>2003</td>
+<td>3</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<td>705</td>
+<td>Various/unknown</td>
+<td>2009</td>
+<td>2</td>
+</tr>
+<tr>
+<td>706</td>
+<td>Various/unknown</td>
+<td>2013</td>
+<td>2</td>
+</tr>
+<tr>
+<td>707</td>
+<td>Venezuela (Bolivarian Republic of)</td>
+<td>2015</td>
+<td>4</td>
+</tr>
+<tr>
+<td>708</td>
+<td>Viet Nam</td>
+<td>1984</td>
+<td>76</td>
+</tr>
+<tr>
+<td>709</td>
+<td>Viet Nam</td>
+<td>1985</td>
+<td>48</td>
+</tr>
+<tr>
+<td>710</td>
+<td>Viet Nam</td>
+<td>1986</td>
+<td>171</td>
+</tr>
+<tr>
+<td>711</td>
+<td>Viet Nam</td>
+<td>1987</td>
+<td>232</td>
+</tr>
+<tr>
+<td>712</td>
+<td>Viet Nam</td>
+<td>1988</td>
+<td>94</td>
+</tr>
+<tr>
+<td>713</td>
+<td>Viet Nam</td>
+<td>1990</td>
+<td>939</td>
+</tr>
+<tr>
+<td>714</td>
+<td>Viet Nam</td>
+<td>1991</td>
+<td>656</td>
+</tr>
+<tr>
+<td>715</td>
+<td>Viet Nam</td>
+<td>1992</td>
+<td>474</td>
+</tr>
+<tr>
+<td>716</td>
+<td>Viet Nam</td>
+<td>1993</td>
+<td>197</td>
+</tr>
+<tr>
+<td>717</td>
+<td>Viet Nam</td>
+<td>1994</td>
+<td>32</td>
+</tr>
+<tr>
+<td>718</td>
+<td>Viet Nam</td>
+<td>1995</td>
+<td>4</td>
+</tr>
+<tr>
+<td>719</td>
+<td>Viet Nam</td>
+<td>1997</td>
+<td>21</td>
+</tr>
+<tr>
+<td>720</td>
+<td>Viet Nam</td>
+<td>2002</td>
+<td>1</td>
+</tr>
+<tr>
+<td>721</td>
+<td>Viet Nam</td>
+<td>2004</td>
+<td>10</td>
+</tr>
+<tr>
+<td>722</td>
+<td>Viet Nam</td>
+<td>2006</td>
+<td>10</td>
+</tr>
+<tr>
+<td>723</td>
+<td>Viet Nam</td>
+<td>2009</td>
+<td>2</td>
+</tr>
+<tr>
+<td>724</td>
+<td>Viet Nam</td>
+<td>2010</td>
+<td>6</td>
+</tr>
+<tr>
+<td>726</td>
+<td>Yemen</td>
+<td>1992</td>
+<td>1</td>
+</tr>
+<tr>
+<td>727</td>
+<td>Yemen</td>
+<td>2004</td>
+<td>1</td>
+</tr>
+<tr>
+<td>728</td>
+<td>Yemen</td>
+<td>2005</td>
+<td>4</td>
+</tr>
+<tr>
+<td>729</td>
+<td>Yemen</td>
+<td>2006</td>
+<td>1</td>
+</tr>
+<tr>
+<td>730</td>
+<td>Zimbabwe</td>
+<td>2006</td>
+<td>4</td>
+</tr>
+<tr>
+<td>731</td>
+<td>Zimbabwe</td>
+<td>2008</td>
+<td>1</td>
+</tr>
+<tr>
+<td>732</td>
+<td>Zimbabwe</td>
+<td>2011</td>
+<td>1</td>
+</tr>
+<tr>
+<td>733</td>
+<td>Zimbabwe</td>
+<td>2014</td>
+<td>7</td>
+</tr>
+<tr>
+<td>734</td>
+<td>Zimbabwe</td>
+<td>2015</td>
+<td>6</td>
+</tr>
+<tr>
+<td>735</td>
+<td>Zimbabwe</td>
+<td>2016</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+<p>725 rows × 3 columns</p>
+<p>Since I want to plot a multiple line graph, I need to supply one dataframe per each line. This step is to create one dataframe per source country and clean it up. For example, if there is one year where no refugees are resettled, that year doesn&rsquo;t exist in the dataframe, so I have to check whether the years are missing or not, and if missing, create it and set the value to 0.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># create one dataframe per one origin country</span>
+UniqueNames <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>Origin<span style="color:#f92672">.</span>unique()
+DataFrameDict <span style="color:#f92672">=</span> {elem : pd<span style="color:#f92672">.</span>DataFrame <span style="color:#66d9ef">for</span> elem <span style="color:#f92672">in</span> UniqueNames}
+
+<span style="color:#66d9ef">for</span> key <span style="color:#f92672">in</span> DataFrameDict<span style="color:#f92672">.</span>keys():
+    DataFrameDict[key] <span style="color:#f92672">=</span> df[:][df<span style="color:#f92672">.</span>Origin <span style="color:#f92672">==</span> key]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">clean_up_dataframe</span>(df):
+    country <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>Origin<span style="color:#f92672">.</span>unique()[<span style="color:#ae81ff">0</span>]
+    df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Origin&#39;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+    df<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>Year
+    df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>drop(<span style="color:#e6db74">&#39;Year&#39;</span>, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+    df <span style="color:#f92672">=</span> df<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;Value&#39;</span>: country})
+
+    df2 <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame({<span style="color:#e6db74">&#39;Year&#39;</span>:range(<span style="color:#ae81ff">1983</span>,<span style="color:#ae81ff">2016</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>), country:<span style="color:#ae81ff">0</span>}) <span style="color:#75715e"># dummy dataframe</span>
+    df2<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> df2<span style="color:#f92672">.</span>Year
+    df2[country] <span style="color:#f92672">=</span> df[country]
+    df2 <span style="color:#f92672">=</span> df2<span style="color:#f92672">.</span>fillna(<span style="color:#ae81ff">0</span>)
+    df2 <span style="color:#f92672">=</span> df2[country]
+
+    <span style="color:#66d9ef">return</span> df2
+</code></pre></div><p>And because Syria is in the Middle East, I want to focus in the MENA region (Middle East and North Africa). However, the list is too big, and I&rsquo;ve yet to figure out how to make it look pretty. What I do instead is group countries into each subregion and plot them.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># orginal MENA, too big</span>
+UniqueNames_og_mena <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Algeria&#39;</span>, <span style="color:#e6db74">&#39;Bahrain&#39;</span>, <span style="color:#e6db74">&#39;Djibouti&#39;</span>, <span style="color:#e6db74">&#39;Egypt&#39;</span>, <span style="color:#e6db74">&#39;Iran&#39;</span>, <span style="color:#e6db74">&#39;Iraq&#39;</span>, <span style="color:#e6db74">&#39;Israel&#39;</span>, <span style="color:#e6db74">&#39;Jordan&#39;</span>,
+<span style="color:#e6db74">&#39;Kuwait&#39;</span>, <span style="color:#e6db74">&#39;Lebanon&#39;</span>, <span style="color:#e6db74">&#39;Libya&#39;</span>, <span style="color:#e6db74">&#39;Mauritania&#39;</span>, <span style="color:#e6db74">&#39;Morocco&#39;</span>, <span style="color:#e6db74">&#39;Oman&#39;</span>, <span style="color:#e6db74">&#39;Palestine&#39;</span>, <span style="color:#e6db74">&#39;Qatar&#39;</span>,
+<span style="color:#e6db74">&#39;Sahrawi Arab Democratic Republic&#39;</span>, <span style="color:#e6db74">&#39;Saudi Arabia&#39;</span>, <span style="color:#e6db74">&#39;Somalia&#39;</span>, <span style="color:#e6db74">&#39;Sudan&#39;</span>, <span style="color:#e6db74">&#39;Syria&#39;</span>, <span style="color:#e6db74">&#39;Tunisia&#39;</span>,
+<span style="color:#e6db74">&#39;United Arab Emirates&#39;</span>, <span style="color:#e6db74">&#39;Yemen&#39;</span>, <span style="color:#e6db74">&#39;Afghanistan&#39;</span>, <span style="color:#e6db74">&#39;Armenia&#39;</span>, <span style="color:#e6db74">&#39;Azerbaijan&#39;</span>, <span style="color:#e6db74">&#39;Chad&#39;</span>, <span style="color:#e6db74">&#39;Comoros&#39;</span>,
+<span style="color:#e6db74">&#39;Cyprus&#39;</span>, <span style="color:#e6db74">&#39;Eritrea&#39;</span>, <span style="color:#e6db74">&#39;Georgia&#39;</span>, <span style="color:#e6db74">&#39;Mali&#39;</span>, <span style="color:#e6db74">&#39;Niger&#39;</span>, <span style="color:#e6db74">&#39;Pakistan&#39;</span>, <span style="color:#e6db74">&#39;Turkey&#39;</span>]
+
+<span style="color:#75715e"># MENA</span>
+UniqueNames_mena <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Algeria&#39;</span>, <span style="color:#e6db74">&#39;Bahrain&#39;</span>, <span style="color:#e6db74">&#39;Djibouti&#39;</span>, <span style="color:#e6db74">&#39;Egypt&#39;</span>, <span style="color:#e6db74">&#39;Iran (Islamic Rep. of)&#39;</span>, <span style="color:#e6db74">&#39;Iraq&#39;</span>, <span style="color:#e6db74">&#39;Jordan&#39;</span>,
+               <span style="color:#e6db74">&#39;Kuwait&#39;</span>, <span style="color:#e6db74">&#39;Lebanon&#39;</span>, <span style="color:#e6db74">&#39;Libya&#39;</span>, <span style="color:#e6db74">&#39;Mauritania&#39;</span>, <span style="color:#e6db74">&#39;Saudi Arabia&#39;</span>, <span style="color:#e6db74">&#39;Somalia&#39;</span>, <span style="color:#e6db74">&#39;Sudan&#39;</span>,
+               <span style="color:#e6db74">&#39;Syrian Arab Rep.&#39;</span>, <span style="color:#e6db74">&#39;Tunisia&#39;</span>, <span style="color:#e6db74">&#39;Yemen&#39;</span>, <span style="color:#e6db74">&#39;Afghanistan&#39;</span>,
+               <span style="color:#e6db74">&#39;Armenia&#39;</span>, <span style="color:#e6db74">&#39;Azerbaijan&#39;</span>, <span style="color:#e6db74">&#39;Chad&#39;</span>, <span style="color:#e6db74">&#39;Eritrea&#39;</span>, <span style="color:#e6db74">&#39;Georgia&#39;</span>, <span style="color:#e6db74">&#39;Pakistan&#39;</span>, <span style="color:#e6db74">&#39;Turkey&#39;</span>]   
+
+<span style="color:#75715e"># LEVANT  </span>
+UniqueNames_levant <span style="color:#f92672">=</span> [ <span style="color:#e6db74">&#39;Iraq&#39;</span>, <span style="color:#e6db74">&#39;Jordan&#39;</span>, <span style="color:#e6db74">&#39;Lebanon&#39;</span>, <span style="color:#e6db74">&#39;Syrian Arab Rep.&#39;</span>]  
+
+<span style="color:#75715e"># NORTH AFRICA</span>
+UniqueNames_north_africa <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;Algeria&#39;</span>, <span style="color:#e6db74">&#39;Djibouti&#39;</span>, <span style="color:#e6db74">&#39;Egypt&#39;</span>, <span style="color:#e6db74">&#39;Libya&#39;</span>, <span style="color:#e6db74">&#39;Mauritania&#39;</span>,  <span style="color:#e6db74">&#39;Somalia&#39;</span>, <span style="color:#e6db74">&#39;Sudan&#39;</span>,
+                <span style="color:#e6db74">&#39;Tunisia&#39;</span>, <span style="color:#e6db74">&#39;Chad&#39;</span>, <span style="color:#e6db74">&#39;Eritrea&#39;</span>]
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot</span>(region_name, region_list):
+    df1 <span style="color:#f92672">=</span> clean_up_dataframe(DataFrameDict[region_list[<span style="color:#ae81ff">0</span>]])
+    ax <span style="color:#f92672">=</span> df1<span style="color:#f92672">.</span>plot(figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">15</span>,<span style="color:#ae81ff">10</span>))
+
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> region_list[<span style="color:#ae81ff">1</span>:]:
+        df <span style="color:#f92672">=</span> clean_up_dataframe(DataFrameDict[i])
+        df<span style="color:#f92672">.</span>plot(ax<span style="color:#f92672">=</span>ax)
+
+    plt<span style="color:#f92672">.</span>xlabel(<span style="color:#e6db74">&#39;Year&#39;</span>)
+    plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74">&#39;Value&#39;</span>)
+    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;Resettled Refugees in Sweden from {} Region Between 1983-2016&#39;</span><span style="color:#f92672">.</span>format(region_name))
+    ax<span style="color:#f92672">.</span>legend()
+
+    plt<span style="color:#f92672">.</span>show()
+
+<span style="color:#75715e"># plot(&#39;All MENA&#39;, UniqueNames_og_mena) # list is too big</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot(<span style="color:#e6db74">&#39;MENA&#39;</span>, UniqueNames_mena)
+</code></pre></div><!-- raw HTML omitted -->
+<p><img src="/images/resettled_refugees_in_sweden_files/refugees_swe_jekyll_8_0.png" alt="png"></p>
+<p>You can see that a lot of Iraqi refugees resettled between 1990-1995, which coincides with the Gulf War (1990-1).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot(<span style="color:#e6db74">&#39;Levant&#39;</span>, UniqueNames_levant)
+</code></pre></div><p><img src="/images/resettled_refugees_in_sweden_files/refugees_swe_jekyll_10_0.png" alt="png"></p>
+<p>This graph shows only refugees from the Levant region. As expected, a lot of Iraqis sought asylum during the 90&rsquo;s, but Syrian refugees spiked up after 2010, which coincides with Arab Spring (2010-2).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">plot(<span style="color:#e6db74">&#39;North Africa&#39;</span>, UniqueNames_north_africa)
+</code></pre></div><p><img src="/images/resettled_refugees_in_sweden_files/refugees_swe_jekyll_12_0.png" alt="png"></p>
+<p>In North Africa, Somalian refugees spiked up around 2010, which is the result from non-functioning government, which resulted in rising clan wars. Additionally, you can see that there are a lot of Eritrean refugees too, from indefinite conscription. Families of those who fled the military are also targeted.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>How angur became องุ่น</title>
+            <link>kahnwong.github.io/posts/2017-11-24-how-angur-became-%E0%B8%AD%E0%B8%87%E0%B8%B8%E0%B9%88%E0%B8%99/</link>
+            <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-11-24-how-angur-became-%E0%B8%AD%E0%B8%87%E0%B8%B8%E0%B9%88%E0%B8%99/</guid>
+            <description>More often than not, Thai loanwords are of Indic, Khmer, English or Chinese origin. Although loans from other languages do exist. For instance, องุ่น (grape). This word is of Persian origin (read: Iran), which is انگور, literally angur. In Thai it&amp;rsquo;s angun. Notice that it&amp;rsquo;s n at the end instead of the original r. The reason is because in Thai r as end consonant doesn&amp;rsquo;t exist, instead substituted with n. For example, the Sanskrit loanword ahar is pronounced as aha[n] in Thai.</description>
+            <content type="html"><![CDATA[<p>More often than not, Thai loanwords are of Indic, Khmer, English or Chinese origin. Although loans from other languages do exist. For instance, องุ่น (grape). This word is of Persian origin (read: Iran), which is انگور, literally angur. In Thai it&rsquo;s angun. Notice that it&rsquo;s <em>n</em> at the end instead of the original <em>r</em>. The reason is because in Thai <em>r</em> as <em>end consonant</em> doesn&rsquo;t exist, instead substituted with <em>n</em>. For example, the Sanskrit loanword <em>ahar</em> is pronounced as <em>aha[n]</em> in Thai.</p>
+<p>Rose is also borrowed from Persian –  گلاب‏, literally gulab. Same in Thai except for some reason they make <em>lab</em> a rising tone. Which is a step up from Persian pronunciation (which is in high tone).</p>
+<p>Cigarette is also borrowed from Persian - بوری‏, literally Bure (e as in see). I&rsquo;m sure in Thai they changed the tone as well, and I&rsquo;m yet to find out its Persian pronunciation.</p>
+<p>I&rsquo;ll update when I know how they really pronounce بوری‏.</p>
+<p>Edit: apparently Thai short vowel is longer than Persian. So for Thais to pronounce gulab the Persian way they would have to pronounce the &ldquo;gu&rdquo; shorter and decrease the tone associated with &ldquo;lab&rdquo; down a notch.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>The confusing case of Thai romanization system</title>
+            <link>kahnwong.github.io/posts/2017-09-15-the-confusing-case-of-thai-romanization-system/</link>
+            <pubDate>Fri, 15 Sep 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-09-15-the-confusing-case-of-thai-romanization-system/</guid>
+            <description>Thai Version
+You decided to visit Thailand for whatever reason I don&amp;rsquo;t want to know. (It&amp;rsquo;s not my business.) Assuming you&amp;rsquo;re in from outside of Asia, you&amp;rsquo;ll land at Suvarnabhumi Airport. The problem? The locals don&amp;rsquo;t pronounce it that way. All the names and signs here are romanized using the Royal Thai General System of Transcription (RTGS). The big problem with this is that it is light years away of what Thais actually pronounce.</description>
+            <content type="html"><![CDATA[<p><a href="kahnwong.github.io/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/">Thai Version</a></p>
+<p>You decided to visit Thailand for whatever reason I don&rsquo;t want to know. (It&rsquo;s not my business.) Assuming you&rsquo;re in from outside of Asia, you&rsquo;ll land at Suvarnabhumi Airport. The problem? The locals don&rsquo;t pronounce it that way. All the names and signs here are romanized using the Royal Thai General System of Transcription (RTGS). The big problem with this is that it is light years away of what Thais actually pronounce. For example:</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<table>
+<thead>
+<tr>
+<th>Thai</th>
+<th>Romanization</th>
+<th>Romanization System</th>
+<th>Pronunciation</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>เทเวศ</td>
+<td>The-wet</td>
+<td>RTGS</td>
+<td>Tae-wet</td>
+<td>Pali-Sanskrit</td>
+</tr>
+<tr>
+<td>สุวรรณภูมิ</td>
+<td>Suvarnabhumi</td>
+<td>Devanagari transliteration</td>
+<td>Su-wan*-na-poom <!-- raw HTML omitted -->*&lsquo;a&rsquo; as in father</td>
+<td>Pali-Sanskrit</td>
+</tr>
+<tr>
+<td>ดินแดง</td>
+<td>Din-daeng</td>
+<td>RTGS</td>
+<td>Din-daeng</td>
+<td>Thai</td>
+</tr>
+<tr>
+<td>ศรีราชา</td>
+<td>Sri Racha</td>
+<td>Mixed:<!-- raw HTML omitted -->__Sri__ - Devanagari transliteration<!-- raw HTML omitted -->__Racha__ - RTGS</td>
+<td>See-ra-cha</td>
+<td>Pali-Sanskrit</td>
+</tr>
+</tbody>
+</table>
+<p>As you can see, even words from the same source still use different romanization system. The best of all is a word of Pali-Sanskrit origin can also use both systems to romanize. In the same word. Gott hilf mir.</p>
+<h4 id="some-history">Some history</h4>
+<p>A lot of words from Pali-Sanskrit entered the Thai language some time before 1500&rsquo;s. (Can&rsquo;t even find a source as to how it got into Thai and what it was used for.)</p>
+<h3 id="boring-bits-that-you-should-read">Boring bits (that you should read)</h3>
+<p>Some people prefer words of Pali-Sanskrit origin to be romanized using Devanagari transliteration. I should note that Devanagari transliteration is <em>lossless</em> whereas RTGS is <em>lossy</em>. It means that transliteration via the Devanagari system can be transliterate back and forth without mutating the characters whereas RTGS transliteration can&rsquo;t be transliterate back to Thai unless you already know how it&rsquo;s spelled in Thai.</p>
+<p>Hence all the problems. RTGS is trying to represent how Thai words are spelled but it does not represent how it&rsquo;s pronounced.</p>
+<h3 id="summary-in-case-you-still-dont-get-it">Summary in case you still don&rsquo;t get it</h3>
+<p>Thai uses RTGS to romanize but the problem is that you can&rsquo;t convert it back to Thai and it does not represent how a word is pronounced by Thais. However, words of Pali-Sanskrit origin can sometimes be romanized using Devanagari transliteration, which again is not even close to what Thais pronounce.</p>
+<h3 id="bonus">Bonus</h3>
+<p>There&rsquo;s another romanization system called &ldquo;whatever I damn well please use to romanize.&rdquo;</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>Thailand is not really LGBT friendly</title>
+            <link>kahnwong.github.io/posts/2017-09-09-thailand-is-not-really-lgbt-friendly/</link>
+            <pubDate>Sat, 09 Sep 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-09-09-thailand-is-not-really-lgbt-friendly/</guid>
+            <description>I just fished a documentary about the lives of LGBT people in China (and Hong Kong). One person from this documentary happened to be an elite in Hong Kong and he underwent sex reassignment surgery at a well-known clinic in Bangkok. She was very happy with the results and she relocated to Bangkok for however long, I don&amp;rsquo;t know. But what really got me thinking is the fact that she thought Thailand is more open to LGBT people.</description>
+            <content type="html"><![CDATA[<p>I just fished a documentary about the lives of LGBT people in China (and Hong Kong). One person from this documentary happened to be an elite in Hong Kong and he underwent sex reassignment surgery at a well-known clinic in Bangkok. She was very happy with the results and she relocated to Bangkok for however long, I don&rsquo;t know. But what really got me thinking is the fact that she thought Thailand is more open to LGBT people. I wouldn&rsquo;t say Thailand is really open. I mean it is definitely more open than, say, China or conservative societies. Thailand is open in a sense that they&rsquo;re seen in the media as a comic relief and we know they exist. But they still put LGBT <em>inside</em> a box. Let me explain.</p>
+<h3 id="male-to-female-transgender">Male to Female Transgender</h3>
+<p>Practical-wise they&rsquo;re more or less accepted unless you&rsquo;re marrying one. Then it gets complicated because</p>
+<h3 id="thailand-does-not-allow-changing-sex-designation-on-birth-certificate">Thailand does not allow changing sex designation on birth certificate</h3>
+<p>I know it&rsquo;s a shocker. But it&rsquo;s true. A lot of (biologically) same sex couples can&rsquo;t get married for this reason. Why? You can&rsquo;t marry someone who has the same gender as you. So much for being <em>open</em>™. Also,</p>
+<h3 id="only-feminine-masculine-gay-relationship-exists">Only feminine-masculine gay relationship exists</h3>
+<p>As in one person in a gay relationship has to be <em>feminine</em> and the other <em>masculine</em>. For example, a butch and lipstick lesbian. A butch-butch or lipstick-lipstick? Nuh-uh that&rsquo;s not how lesbian works in Thailand. And the worst offender is:</p>
+<h3 id="you-cant-be-bisexual-you-have-to-pick-one">You can&rsquo;t be bisexual. You have to pick one.</h3>
+<p>This happened to a friend of mine - she was working with a few people and she looks butch, so this happened:</p>
+<blockquote>
+<p>Them: What&rsquo;s your preference?<br>
+Her: Both (actually she&rsquo;s pansexual but for the sake of simplicity&hellip;.) <br>
+Them: Nuh-uh you gotta pick one. <br>
+Her: <em>getting uneasy and prepares to leave</em></p>
+</blockquote>
+<p>So much for being <em>LGBT friendly</em>™.</p>
+<h2 id="updated-24-sep-2017">Updated 24 Sep, 2017</h2>
+<p>I asked a Thai gay man what he thinks. This is his reply:</p>
+<blockquote>
+<p>Thailand is not really open for LGBT. For example, same-sex marriage is not kosher. Businesses and law are not friendly to them since the law doesn&rsquo;t recognize the union. Cross-dressing (as in MtF) will make it harder to land a job because no one will employ them. Relationship-wise, gay couples who are open about it are rare. Thais pay a lot of attention to looks, especially among gay men - as in hooking up just for sex, not genuine relationship. Another elephant in the room is bisexuality, because not a lot of Thais truly understand what it means. They don&rsquo;t accept bisexuals because they think it&rsquo;s just a guy who likes both and he kinda lies to his girlfriend that he likes her (seeing he also likes men to so it must be true that he can&rsquo;t really love women). Although Thais are more acceptable with female bisexual.</p>
+</blockquote>
+]]></content>
+        </item>
+        
+        <item>
+            <title>The curious case of why Thais ask where you study</title>
+            <link>kahnwong.github.io/posts/2017-09-08-the-curious-case-of-why-thais-ask-where-you-study/</link>
+            <pubDate>Fri, 08 Sep 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-09-08-the-curious-case-of-why-thais-ask-where-you-study/</guid>
+            <description>I was out for a stroll and I met a middle-aged person who, I think, knows my family. Without time being wasted, she asked &amp;ldquo;where do you study?&amp;rdquo; Where, not what.
+Part of the reason why Thais ask &amp;ldquo;where&amp;rdquo; probably stems from the fact that they are a collective society, which means conformity and connections are very important. It&amp;rsquo;s safe to assume that people who went to the same school would &amp;ldquo;favor&amp;rdquo; people from their school when applying for jobs or asking for favors.</description>
+            <content type="html"><![CDATA[<p>I was out for a stroll and I met a middle-aged person who, I think, knows my family. Without time being wasted, she asked &ldquo;where do you study?&rdquo; Where, <em>not</em> what.</p>
+<p>Part of the reason why Thais ask &ldquo;where&rdquo; probably stems from the fact that they are a collective society, which means conformity and connections are very important. It&rsquo;s safe to assume that people who went to the same school would &ldquo;favor&rdquo; people from their school when applying for jobs or asking for favors. Of course, discriminating people who went to &ldquo;different,&rdquo; probably &ldquo;inferior&rdquo; even, does happen.</p>
+<p>You often see people getting upset over not getting into their desired college because a) it would disappoint their family and b) makes they look bad because they&rsquo;re not &ldquo;good&rdquo; enough to get in there. Some study at their second choice and try to get in their desired place next year - which is a waste of time if you ask me - also money.</p>
+<p>Back to the topic. If I go through a script and answer &ldquo;I study at x,&rdquo; they would say &ldquo;why won&rsquo;t you go to $better_college.&rdquo; So now I&rsquo;m getting interrogated by a middle aged lady who just want to assert her opinion that a) I&rsquo;m not good enough and b) $her_kids are better than me.</p>
+<p>As if all this is not traumatized enough, they will also ask (if you&rsquo;ve known to be a bright spark) &ldquo;why don&rsquo;t you study medicine so you can help people and get good karma.&rdquo; Because that&rsquo;s not what I like. Simple as that. Studying medicine is not for everyone and even if I can get myself a med degree it doesn&rsquo;t mean I <em>have</em> to take it.</p>
+<p>It is not uncommon either for parent(s) to force their child to take x degree because &ldquo;it pays better and people will respect you.&rdquo; A lot of fresh graduates end up taking another degree <em>for</em> themselves. A tragic story because all the time and money for fulfilling their parents desire are down the drain.</p>
+<p>There. It&rsquo;s all out. Now let me go for a stroll in peace.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>What Thais always ask when texting</title>
+            <link>kahnwong.github.io/posts/2017-09-06-what-thais-always-ask-when-texting/</link>
+            <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-09-06-what-thais-always-ask-when-texting/</guid>
+            <description>These days all the IMs (instant messeging) have a) profile picture and b) name. Assuming these two are out of the question, Thais will always ask *:
+* I know it’s a generalization but the percentage of Thais who do ask is far greater than those who don’t.
+ Are you male or female? **
+What is your age?
+(Bonus question) Are you Thai?
+** The conversation happened in English. Right away after saying hi.</description>
+            <content type="html"><![CDATA[<p>These days all the IMs (instant messeging) have a) profile picture and b) name. Assuming these two are out of the question, Thais will always ask *:</p>
+<p>* I know it’s a generalization but the percentage of Thais who do ask is far greater than those who don’t.</p>
+<blockquote>
+<p>Are you male or female? **<br>
+What is your age?<br>
+(Bonus question) Are you Thai?<br>
+** The conversation happened in English. Right away after saying hi.</p>
+</blockquote>
+<p>It’s probably made more sense if this happened in Thai.
+Now, let me explain problems with these questions.</p>
+<ol>
+<li>
+<p>It does not make a difference if what you’re talking about has nothing to do with gender. For example, academic stuff. I reached out to an online user of a popular forum per her request to ‘find an English practice partner.’ The topic itself has nothing to do with gender, yet I’ve been asked this multiple times even after I dodged the question. (Because it’s impolite to point out that it’s rude, don’t you agree?)<br>
+Side note: in Thai they add ‘particles’ at the end of sentence to denote politeness, which can be used to identify ‘gender’*** of the speaker.  <br>
+***  Only two of these particles exist, krub (masculine) and ka (feminine).</p>
+</li>
+<li>
+<p>It does not make a difference if it does not concern your age. Even if you ask for age for finding out common interests, it still is not a guarantee that your interests will intersect. A grandpa can be a hardcore comics fan and a college student can devour the whole library too.<br>
+Side note: Thai society is hierarchical.</p>
+</li>
+<li>
+<p>I think they were meant to ask ‘do you speak Thai?’ Most Thais mindset has it that if you’re Thai then you can speak Thai. Which is not always the case because some children of Thai immigrants abroad do not speak Thai. Also, ‘are you Thai’ can be interpreted as:</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>Do you speak Thai? → heavily implied</p>
+</li>
+<li>
+<p>Are you a Thai citizen? → probably not what they were really asking for but can be possible</p>
+</li>
+<li>
+<p>Are you an ethnic Thai? → also implied — it’s complicated<br>
+You can’t assume anything based on their appearance, citizenship and languages spoken. I could be a hill people from the north of Thailand who is of indigenous tribe who speaks Thai, English and tribal language.</p>
+<p>It makes sense if these questions happened in Thai. But this happened in English, and there is no way of making the first two questions relevant in English because you don’t use different pronouns (you) for anyone older or younger than you. Plus, you can’t really tell gender because in English we just use ‘I’ or ‘me’ to address ourselves. It makes zero difference if you know their age and gender.</p>
+</li>
+</ul>
+<p>In the end, it might be the ingrained mindset that you need to know age and gender before to proceed a conversation in Thai. Let me know what you experienced when texting with Thais.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>I no like English class</title>
+            <link>kahnwong.github.io/posts/2017-09-02-i-no-like-english-class/</link>
+            <pubDate>Sat, 02 Sep 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-09-02-i-no-like-english-class/</guid>
+            <description>Earlier this year I volunteered at an “English Clinic” at my school. The premise was to let students practice English with fluent speakers. Read: they don’t really want to practice English.
+First day in, only one student there. Two of my friends were there so we together helped her correcting her written homework. Half way in I still spoke English with her but I sensed something wrong. As it turned out, she barely understood what I was saying, so I resorted to speaking to her in her native language.</description>
+            <content type="html"><![CDATA[<p>Earlier this year I volunteered at an “English Clinic” at my school. The
+premise was to let students practice English with fluent speakers. Read:
+they don’t really want to practice English.</p>
+<p>First day in, only one student there. Two of my friends were there so we
+together helped her correcting her written homework. Half way in I still
+spoke English with her but I sensed something wrong. As it turned out,
+she barely understood what I was saying, so I resorted to speaking to
+her in her native language. Her face was of surprises with a capital s.
+In her mind, it seemed like it is not possible for an Asian-looking
+person to speak fluent English and her language.</p>
+<p>Sitting in the “clinic” reading books alone was not out of ordinary
+because the only instance students will come to you is when their
+teachers forced them to. They wanted their students to take turn talking
+to us. No, they really don’t want to talk to us in English.</p>
+<p>When I correct someone’s pronunciation, their friends nearby would mock
+them, saying what was meant to be a funny remark but actually hurtful.
+When I took turns conversing a scripted conversation from their lessons,
+they didn’t register a word I was saying. They just kept speaking their
+parts and paused to signal for me to speak until the end of the script.</p>
+<p>At the end of their course, they had to interview any foreigner and ask
+them a few questions and video tape it. I was interviewed around six
+times even though I am not a foreigner. I look foreign but I was born
+and bred here. The best part? They knew I speak their language. They
+just wanted to get it over with their class. And the questions?</p>
+<ul>
+<li>What is your name?</li>
+<li>Why do you study in [here]?</li>
+<li>What is your favorite food?</li>
+<li>What is your favorite sports?</li>
+<li>What do you think about the [local] people?</li>
+</ul>
+<p>No, they didn’t understand a word I was saying. They just kept firing
+questions when they detected a pause. How did I know? I answered a few
+sentences and paused a bit to think of what to say next — they fired
+another question right away.</p>
+<p>The teachers were not any better. One pretended she was a Filipina and
+asked me to translate what clearly was her class material from English
+to the local language. Seriously?</p>
+<p>I stopped going after that. Not worth my time and I figuered if they
+really wanted to improve their English, they won’t look for someone like
+me anyway because I don’t teach them to pass exams.</p>
+<p>Which reminds me — learning in English here, for the most part, is to
+pass English exams and throw it down the drain because they don’t
+realize how useful English is in this modern age.</p>
+]]></content>
+        </item>
+        
+        <item>
+            <title>The state of Thai English texting group</title>
+            <link>kahnwong.github.io/posts/2017-08-30-the-state-of-thai-english-texting-group/</link>
+            <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+            
+            <guid>kahnwong.github.io/posts/2017-08-30-the-state-of-thai-english-texting-group/</guid>
+            <description>Most Thais can’t speak fluent English and this is a fact. But some like to pretend they can.
+I found a member recruitment post so I said to myself “hey this looks interesting-ish this is great finally Thais will have more resources to learn English.” Instant disappointment.
+The first group I was in was created by a Thai who wants to work in Europe. Her English? Mia Farang English — very broken English.</description>
+            <content type="html"><![CDATA[<p>Most Thais can’t speak fluent English and this is a fact. But some like
+to <em>pretend</em> they can.</p>
+<p>I found a member recruitment post so I said to myself “hey this looks
+interesting-ish this is great finally Thais will have more resources to
+learn English.” Instant disappointment.</p>
+<p>The first group I was in was created by a Thai who wants to work in
+Europe. Her English? Mia Farang English — very broken English. On one
+occasion, she said “the group is so quiet.” so I said “share your guilty
+pleasures.” — DEAD AIR. No one actually responded to my prompt and the
+group owner herself <em>left</em> the group because she thought I was
+<em>trashing</em> her. For some reason.</p>
+<p>On another occasion, I was talking to a Dutchman about Thai customs. The
+topic was women’s place in society and he was wondering about Thai
+women’s. I told him “some wives <em>grovel</em> their husband before bed*.”* I
+was instantly kicked out of the group because I discussed about
+*forbidden* topics — royal family, politics and religion.</p>
+<p>I so did NOT talk about those topics.</p>
+<p>Two Europeans who were in the group tried to talk some sense into her
+and let me back in but no dice. The best part? She dropped the “You no
+understand Thailand.” to the Europeans. <em>Side note: I was born and
+rasied here.</em></p>
+<p>Also, did I mention she’s the one who started talking in Thai in the
+<em>English</em> texting group? Happens very often too from what I hear.
+Europeans in the group? Google Translate all the way.</p>
+<p>And there is another group, which appears to be the best one yet. The
+leader has a degree in translations and literature — she speaks
+<em>textbook</em> English and does not know how to speak ‘colloquially’ and
+still can’t properly use articles (a, an, the).</p>
+<p>Whenever I correct her English, she would throw a fit at me because I am
+‘undermining’ her English skills. Some examples:</p>
+<ul>
+<li>
+<p>I am walking at the mall — it’s <em>strolling</em></p>
+</li>
+<li>
+<pre><code>We use proper English here — full of lol’s and broken English. Oh,
+</code></pre>
+<p>and she asked the members “you all know what I’m talking about,
+right?”</p>
+</li>
+<li>
+<p>Are you satisfied? — asking a friend whether she’s happy with her
+grades or not. Yes, in an informal setting.</p>
+</li>
+<li>
+<p>I have just woken up — not technically wrong but come on who says it like this to a friend?</p>
+</li>
+</ul>
+<p>And the members? I see almost next to no improvement because:</p>
+<ol>
+<li>
+<p>They don’t read supplement materials (anything just to broaden their
+vocabulary or improving hearing skills)</p>
+</li>
+<li>
+<p>Spamming same phrases over and over again — morning, good afternoon,
+good evening, good night (I wish I’m joking but I’m not)</p>
+</li>
+<li>
+<p>No improvements even after <em>repeated</em> corrections — no verb to be
+and wrong subject-verb agreement and wrong simple past tense OVER
+AND OVER AGAIN (yes, I gave up correcting them)</p>
+</li>
+</ol>
+<p>Some people also ‘offer’ their service to fellow English learners as
+well. The kicker is they themselves don’t even speak fluent English. Not
+to mention some who looks for a friend to text in English, foreign or
+local. The problem with this is in almost all cases both sides speak
+broken English. Some go even further — asking for a friend to chat with,
+even when they can’t understand spoken English (not TEFL teacher speak).</p>
+<p>It makes me wonder why these people are trying to join as many group as
+they can yet fail to utilize any of them. Instead, they insist on using
+the same phrases (wrongly) over and over again with no sign of
+improvements. And out of the blue text in Thai without even trying to
+form the sentences in English. (I mean they can just write what they
+want to say in Thai and what they think it should look like in English).
+Then again, they might just want a friend and use English as an excuse.</p>
+]]></content>
+        </item>
+        
+    </channel>
+</rss>

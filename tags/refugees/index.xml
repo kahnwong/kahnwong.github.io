@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>refugees on Karn Wong</title>
+    <link>kahnwong.github.io/tags/refugees/</link>
+    <description>Recent content in refugees on Karn Wong</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 31 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="kahnwong.github.io/tags/refugees/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Resettled refugees in Sweden</title>
+      <link>kahnwong.github.io/posts/2018-07-31-resettled-refugees-in-sweden/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>kahnwong.github.io/posts/2018-07-31-resettled-refugees-in-sweden/</guid>
+      <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
+In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
+    </item>
+    
+  </channel>
+</rss>
