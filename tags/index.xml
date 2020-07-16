@@ -2,138 +2,138 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Karn Wong</title>
-    <link>kahnwong.github.io/tags/</link>
+    <link>/tags/</link>
     <description>Recent content in Tags on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 23 May 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="kahnwong.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>data science</title>
-      <link>kahnwong.github.io/tags/data-science/</link>
+      <link>/tags/data-science/</link>
       <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/data-science/</guid>
+      <guid>/tags/data-science/</guid>
       <description></description>
     </item>
     
     <item>
       <title>data analysis</title>
-      <link>kahnwong.github.io/tags/data-analysis/</link>
+      <link>/tags/data-analysis/</link>
       <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/data-analysis/</guid>
+      <guid>/tags/data-analysis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>celiac</title>
-      <link>kahnwong.github.io/tags/celiac/</link>
+      <link>/tags/celiac/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/celiac/</guid>
+      <guid>/tags/celiac/</guid>
       <description></description>
     </item>
     
     <item>
       <title>food</title>
-      <link>kahnwong.github.io/tags/food/</link>
+      <link>/tags/food/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/food/</guid>
+      <guid>/tags/food/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Thailand</title>
-      <link>kahnwong.github.io/tags/thailand/</link>
+      <link>/tags/thailand/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/thailand/</guid>
+      <guid>/tags/thailand/</guid>
       <description></description>
     </item>
     
     <item>
       <title>languages</title>
-      <link>kahnwong.github.io/tags/languages/</link>
+      <link>/tags/languages/</link>
       <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/languages/</guid>
+      <guid>/tags/languages/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Thai</title>
-      <link>kahnwong.github.io/tags/thai/</link>
+      <link>/tags/thai/</link>
       <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/thai/</guid>
+      <guid>/tags/thai/</guid>
       <description></description>
     </item>
     
     <item>
       <title>บทความภาษาไทย</title>
-      <link>kahnwong.github.io/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</link>
+      <link>/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</link>
       <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</guid>
+      <guid>/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Indic</title>
-      <link>kahnwong.github.io/tags/indic/</link>
+      <link>/tags/indic/</link>
       <pubDate>Thu, 11 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/indic/</guid>
+      <guid>/tags/indic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>refugees</title>
-      <link>kahnwong.github.io/tags/refugees/</link>
+      <link>/tags/refugees/</link>
       <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/refugees/</guid>
+      <guid>/tags/refugees/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Farsi</title>
-      <link>kahnwong.github.io/tags/farsi/</link>
+      <link>/tags/farsi/</link>
       <pubDate>Fri, 24 Nov 2017 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/farsi/</guid>
+      <guid>/tags/farsi/</guid>
       <description></description>
     </item>
     
     <item>
       <title>culture</title>
-      <link>kahnwong.github.io/tags/culture/</link>
+      <link>/tags/culture/</link>
       <pubDate>Sat, 09 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/culture/</guid>
+      <guid>/tags/culture/</guid>
       <description></description>
     </item>
     
     <item>
       <title>LGBT</title>
-      <link>kahnwong.github.io/tags/lgbt/</link>
+      <link>/tags/lgbt/</link>
       <pubDate>Sat, 09 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/lgbt/</guid>
+      <guid>/tags/lgbt/</guid>
       <description></description>
     </item>
     
     <item>
       <title>ESL</title>
-      <link>kahnwong.github.io/tags/esl/</link>
+      <link>/tags/esl/</link>
       <pubDate>Sat, 02 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/tags/esl/</guid>
+      <guid>/tags/esl/</guid>
       <description></description>
     </item>
     

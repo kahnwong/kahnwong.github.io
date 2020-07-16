@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>บทความภาษาไทย on Karn Wong</title>
-    <link>kahnwong.github.io/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</link>
+    <link>/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/</link>
     <description>Recent content in บทความภาษาไทย on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 07 Jan 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="kahnwong.github.io/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%84%E0%B8%97%E0%B8%A2/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>ความน่าปวดหัวของการถอดอักษรไทยเป็นตัวโรมัน</title>
-      <link>kahnwong.github.io/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</link>
+      <link>/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</link>
       <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
       
-      <guid>kahnwong.github.io/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</guid>
+      <guid>/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</guid>
       <description>English Version
 *ตัวโรมัน = a b c d e f g &amp;hellip;
 วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:
