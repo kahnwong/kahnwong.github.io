@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 23 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>celiac</title>
+      <link>/tags/celiac/</link>
+      <pubDate>Sat, 15 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/celiac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>food</title>
+      <link>/tags/food/</link>
+      <pubDate>Sat, 15 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/food/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>data science</title>
@@ -26,24 +44,6 @@
       <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/data-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>celiac</title>
-      <link>/tags/celiac/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/celiac/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>food</title>
-      <link>/tags/food/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/food/</guid>
       <description></description>
     </item>
     
