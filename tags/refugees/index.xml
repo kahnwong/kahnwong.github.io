@@ -13,10 +13,10 @@
     
     <item>
       <title>Resettled refugees in Sweden</title>
-      <link>/posts/2018-07-31-resettled-refugees-in-sweden/</link>
+      <link>/posts_o/resettled-refugees-in-sweden/</link>
       <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>/posts/2018-07-31-resettled-refugees-in-sweden/</guid>
+      <guid>/posts_o/resettled-refugees-in-sweden/</guid>
       <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
 In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
     </item>

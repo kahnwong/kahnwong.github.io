@@ -18,7 +18,7 @@
   </url>
   
   <url>
-    <loc>/posts/</loc>
+    <loc>/posts_o/</loc>
     <lastmod>2020-08-15T00:00:00+00:00</lastmod>
   </url>
   
@@ -28,18 +28,8 @@
   </url>
   
   <url>
-    <loc>/posts/2020-08-15-%E0%B9%81%E0%B8%97%E0%B8%84%E0%B8%95%E0%B8%B4%E0%B8%84%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99/</loc>
+    <loc>/posts_o/%E0%B9%81%E0%B8%97%E0%B8%84%E0%B8%95%E0%B8%B4%E0%B8%84%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99/</loc>
     <lastmod>2020-08-15T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/data-science/</loc>
-    <lastmod>2020-05-23T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/2020-05-23-impute-pipelines/</loc>
-    <lastmod>2020-05-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -48,7 +38,7 @@
   </url>
   
   <url>
-    <loc>/posts/2020-04-16-word-based-analysis-with-song-lyrics/</loc>
+    <loc>/posts_o/word-based-analysis-with-song-lyrics/</loc>
     <lastmod>2020-04-16T00:00:00+00:00</lastmod>
   </url>
   
@@ -58,12 +48,12 @@
   </url>
   
   <url>
-    <loc>/posts/2020-01-27-%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</loc>
+    <loc>/posts_o/%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</loc>
     <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/2020-01-12-my-diet-is-not-for-you-to-market-it-as-healthy/</loc>
+    <loc>/posts_o/my-diet-is-not-for-you-to-market-it-as-healthy/</loc>
     <lastmod>2020-01-12T00:00:00+00:00</lastmod>
   </url>
   
@@ -78,7 +68,7 @@
   </url>
   
   <url>
-    <loc>/posts/2020-01-07-%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%9B%E0%B8%A7%E0%B8%94%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%96%E0%B8%AD%E0%B8%94%E0%B8%AD%E0%B8%B1%E0%B8%81%E0%B8%A9%E0%B8%A3%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%95%E0%B8%B1%E0%B8%A7%E0%B9%82%E0%B8%A3%E0%B8%A1%E0%B8%B1%E0%B8%99/</loc>
+    <loc>/posts_o/the-confusing-case-of-thai-transliteration-system-th/</loc>
     <lastmod>2020-01-07T00:00:00+00:00</lastmod>
   </url>
   
@@ -98,7 +88,7 @@
   </url>
   
   <url>
-    <loc>/posts/2019-11-07-loanwords-are-okay/</loc>
+    <loc>/posts_o/loanwords-are-okay/</loc>
     <lastmod>2019-11-07T00:00:00+00:00</lastmod>
   </url>
   
@@ -108,13 +98,8 @@
   </url>
   
   <url>
-    <loc>/posts/2018-10-11-indic-name-mistransliteration-in-thai-version-of-harry-potter/</loc>
+    <loc>/posts_o/indic-name-misromanization-in-thai-version-of-harry-potter/</loc>
     <lastmod>2018-10-11T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/2018-07-31-definition-of-a-word/</loc>
-    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -123,22 +108,12 @@
   </url>
   
   <url>
-    <loc>/posts/2018-07-31-resettled-refugees-in-sweden/</loc>
+    <loc>/posts_o/resettled-refugees-in-sweden/</loc>
     <lastmod>2018-07-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/farsi/</loc>
-    <lastmod>2017-11-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/2017-11-24-how-angur-became-%E0%B8%AD%E0%B8%87%E0%B8%B8%E0%B9%88%E0%B8%99/</loc>
-    <lastmod>2017-11-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/2017-09-15-the-confusing-case-of-thai-romanization-system/</loc>
+    <loc>/posts_o/the-confusing-case-of-thai-transliteration-system/</loc>
     <lastmod>2017-09-15T00:00:00+00:00</lastmod>
   </url>
   
@@ -153,32 +128,27 @@
   </url>
   
   <url>
-    <loc>/posts/2017-09-09-thailand-is-not-really-lgbt-friendly/</loc>
+    <loc>/posts_o/thailand-is-not-really-lgbt-friendly/</loc>
     <lastmod>2017-09-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/2017-09-08-the-curious-case-of-why-thais-ask-where-you-study/</loc>
+    <loc>/posts_o/the-curious-case-of-why-thais-ask-where-you-study/</loc>
     <lastmod>2017-09-08T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/2017-09-06-what-thais-always-ask-when-texting/</loc>
+    <loc>/posts_o/what-thais-always-ask-when-texting/</loc>
     <lastmod>2017-09-06T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/esl/</loc>
-    <lastmod>2017-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2017-08-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/2017-09-02-i-no-like-english-class/</loc>
-    <lastmod>2017-09-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/2017-08-30-the-state-of-thai-english-texting-group/</loc>
+    <loc>/posts_o/the-state-of-thai-english-texting-group/</loc>
     <lastmod>2017-08-30T00:00:00+00:00</lastmod>
   </url>
   

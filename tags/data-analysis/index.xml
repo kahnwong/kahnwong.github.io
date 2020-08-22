@@ -13,19 +13,19 @@
     
     <item>
       <title>Word-based analysis with song lyrics</title>
-      <link>/posts/2020-04-16-word-based-analysis-with-song-lyrics/</link>
+      <link>/posts_o/word-based-analysis-with-song-lyrics/</link>
       <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
       
-      <guid>/posts/2020-04-16-word-based-analysis-with-song-lyrics/</guid>
+      <guid>/posts_o/word-based-analysis-with-song-lyrics/</guid>
       <description>I listen to a lot of music, mostly symphonic heavy metal. What&amp;rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link here!</description>
     </item>
     
     <item>
       <title>Resettled refugees in Sweden</title>
-      <link>/posts/2018-07-31-resettled-refugees-in-sweden/</link>
+      <link>/posts_o/resettled-refugees-in-sweden/</link>
       <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>/posts/2018-07-31-resettled-refugees-in-sweden/</guid>
+      <guid>/posts_o/resettled-refugees-in-sweden/</guid>
       <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
 In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
     </item>

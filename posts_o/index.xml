@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>celiac on Karn Wong</title>
-    <link>/tags/celiac/</link>
-    <description>Recent content in celiac on Karn Wong</description>
+    <title>Posts_os on Karn Wong</title>
+    <link>/posts_o/</link>
+    <description>Recent content in Posts_os on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 15 Aug 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/celiac/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/posts_o/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -21,6 +21,15 @@
 ตัวอาหารที่บางคนกินไม่ได้อาจจะเป็นตัวที่คนกินไม่ได้กันเยอะ อันนี้ก็ถือว่าโชคดี เพราะนั่นแปลว่าผู้ผลิตส่วนใหญ่จะแจ้งไว้บนฉลาก เช่น ไข่ นม แต่ ถ้าดันงอแงกับตัวแปลกๆ ที่คนไม่ค่อยรู้จักกัน อันนี้เริ่มจะอยู่ยาก บุฟเฟ่ร้านดัง อาหารร้านเด็ด โบกมือลาได้เลย
 แล้วกลูเตนเกี่ยวอะไรด้วย? ความงอแงของคนที่กินกลูเตนไม่ได้ คือ ตัวนี้ผู้ประกอบการไม่ค่อยรู้จักกันว่ามันคืออะไร ต่อให้รู้จักก็ไม่ค่อยรู้อีกว่ามันจะไปอยู่ตรงไหนบ้าง ตามตำราก็จะบอกว่า กลูเตนเจอได้ในข้าวสาลี ไรย์ บาเลย์ มอลต์ แต่อันนี้มันเป็นต้นตอไง พอเข้าสู่กระบวนการผลิตมันไปกระจายทิ้งได้หลายจุดมาก เช่น ถ้าเป็นถั่ว บางทีตอนขนส่งเขาให้อุปกรณ์ร่วมกับการขนส่งข้าวสาลี ละอองข้าวสาลีติดถั่ว = ปนเปื้อนกลูเตน
 บางคนอาจจะมีคำถามว่า ซีเรียสไปรึเปล่า แค่นี้เองก็กินไม่ได้เหรอ ก็จะขอตอบว่า คนที่ไม่กินกลูเต็นมีอยู่สามประเภทหลักๆ คือ คนที่แพ้แป้งสาลี คนที่ย่อยกลูเตนไม่ได้ และ คนที่ร่างกายเข้าใจว่ากลูเตนเป็นสิ่งแปลกปลอม เลยต้องกำจัดทิ้ง (celiac) &amp;ndash;&amp;gt; ลำไส้โดนกัด ทีนี้ คนที่แพ้แป้งสาลี อาการก็จะเหมือนคนที่แพ้กุ้ง ปลา ที่อาจจะทนปริมาณน้อยๆ ได้ เช่นเดียวกับคนที่ย่อยกลูเตนไม่ได้ แต่มนุษย์ celiac นั้น กลูเตนน้อยแค่ไหนก็เจ็บตัว</description>
+    </item>
+    
+    <item>
+      <title>Word-based analysis with song lyrics</title>
+      <link>/posts_o/word-based-analysis-with-song-lyrics/</link>
+      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/word-based-analysis-with-song-lyrics/</guid>
+      <description>I listen to a lot of music, mostly symphonic heavy metal. What&amp;rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link here!</description>
     </item>
     
     <item>
@@ -45,6 +54,101 @@
       <guid>/posts_o/my-diet-is-not-for-you-to-market-it-as-healthy/</guid>
       <description>Assuming you&amp;rsquo;re from the Anglosphere or live in trendy neighborhoods, you will see a lot of places offering gluten-free options and slapping &amp;ldquo;healthy&amp;rdquo; label on it. The problem arises when restauraners see the opportunity to cash in the gluten-free wave and start offering gluten-free options. This is an issue because, gluten-free is not just eliminating wheat, barley, rye or oat. It&amp;rsquo;s more than that.
 If you bake pizza using gluten-free flour in the same oven as regular pizza, it is considered cross-contaminated from floating flour dust in the air and some flour bits sticking to the oven, meaning it would contain gluten even if you use gluten-free flour.</description>
+    </item>
+    
+    <item>
+      <title>ความน่าปวดหัวของการถอดอักษรไทยเป็นตัวโรมัน</title>
+      <link>/posts_o/the-confusing-case-of-thai-transliteration-system-th/</link>
+      <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/the-confusing-case-of-thai-transliteration-system-th/</guid>
+      <description>English Version
+*ตัวโรมัน = a b c d e f g &amp;hellip;
+วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:
+   Thai Romanization Romanization System Pronunciation Source     เทเวศ The-wet RTGS Tae-wet Pali-Sanskrit   สุวรรณภูมิ Suvarnabhumi Devanagari transliteration Su-wan*-na-poom *&amp;lsquo;a&amp;rsquo; as in father Pali-Sanskrit   ดินแดง Din-daeng RTGS Din-daeng Thai   ศรีราชา Sri Racha Mixed:__Sri__ - Devanagari transliteration__Racha__ - RTGS See-ra-cha Pali-Sanskrit    จะเห็นได้ว่าคำที่ต้นทางมาจากภาษาเดียวกันยังใช้คนละระบบในการถอดอักษรซะงั้น ที่เหนือกว่านั้นคือคำที่มาจาก บาลี-สันสกฤต นี่ก็ดันใช้ทั้งสองระบบถอดเสียงดื้อๆ โดยที่ไม่แคร์ว่าต่างชาติจะงงเบอร์ไหน</description>
+    </item>
+    
+    <item>
+      <title>Loanwords are okay</title>
+      <link>/posts_o/loanwords-are-okay/</link>
+      <pubDate>Thu, 07 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/loanwords-are-okay/</guid>
+      <description>Does it matter if you language has a lot of loanwords? To be considered a loan, it has to be of foreign origin, and speakers from the borrowing end can understand and use in various contexts. It&amp;rsquo;s perfectly okay for the meaning to shift on the borrowing end, as semantic shift happens naturally. It does not make the word &amp;ldquo;unpure&amp;rdquo; or anything, it&amp;rsquo;s just how things happen. The borrowing language may have different point of view or context, so not all properties from the source can be carried over.</description>
+    </item>
+    
+    <item>
+      <title>Indic name mistransliteration in Thai version of Harry Potter</title>
+      <link>/posts_o/indic-name-misromanization-in-thai-version-of-harry-potter/</link>
+      <pubDate>Thu, 11 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/indic-name-misromanization-in-thai-version-of-harry-potter/</guid>
+      <description>I read Harry Potter as a kid, and I couldn&amp;rsquo;t shake the feeling that one character&amp;rsquo;s name is a bit off. I couldn&amp;rsquo;t quite pinpoint exactly why. Turns out, my hunch was right – the Thai translator used the wrong transliteration.
+In Thai, &amp;ldquo;Parvati Patil&amp;rdquo; is &amp;ldquo;ปาราวตี พาติล.&amp;rdquo; This doesn&amp;rsquo;t even match the English transliteration (from Indic), as seen by a completely messed up second syllable on the first name. Because Thai language has a lot of influences from Indic, we also have our own system of transliterating Indic to Thai.</description>
+    </item>
+    
+    <item>
+      <title>Resettled refugees in Sweden</title>
+      <link>/posts_o/resettled-refugees-in-sweden/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/resettled-refugees-in-sweden/</guid>
+      <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
+In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
+    </item>
+    
+    <item>
+      <title>The confusing case of Thai romanization system</title>
+      <link>/posts_o/the-confusing-case-of-thai-transliteration-system/</link>
+      <pubDate>Fri, 15 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/the-confusing-case-of-thai-transliteration-system/</guid>
+      <description>Thai Version
+You decided to visit Thailand for whatever reason I don&amp;rsquo;t want to know. (It&amp;rsquo;s not my business.) Assuming you&amp;rsquo;re in from outside of Asia, you&amp;rsquo;ll land at Suvarnabhumi Airport. The problem? The locals don&amp;rsquo;t pronounce it that way. All the names and signs here are romanized using the Royal Thai General System of Transcription (RTGS). The big problem with this is that it is light years away of what Thais actually pronounce.</description>
+    </item>
+    
+    <item>
+      <title>Thailand is not really LGBT friendly</title>
+      <link>/posts_o/thailand-is-not-really-lgbt-friendly/</link>
+      <pubDate>Sat, 09 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/thailand-is-not-really-lgbt-friendly/</guid>
+      <description>I just fished a documentary about the lives of LGBT people in China (and Hong Kong). One person from this documentary happened to be an elite in Hong Kong and he underwent sex reassignment surgery at a well-known clinic in Bangkok. She was very happy with the results and she relocated to Bangkok for however long, I don&amp;rsquo;t know. But what really got me thinking is the fact that she thought Thailand is more open to LGBT people.</description>
+    </item>
+    
+    <item>
+      <title>The curious case of why Thais ask where you study</title>
+      <link>/posts_o/the-curious-case-of-why-thais-ask-where-you-study/</link>
+      <pubDate>Fri, 08 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/the-curious-case-of-why-thais-ask-where-you-study/</guid>
+      <description>I was out for a stroll and I met a middle-aged person who, I think, knows my family. Without time being wasted, she asked &amp;ldquo;where do you study?&amp;rdquo; Where, not what.
+Part of the reason why Thais ask &amp;ldquo;where&amp;rdquo; probably stems from the fact that they are a collective society, which means conformity and connections are very important. It&amp;rsquo;s safe to assume that people who went to the same school would &amp;ldquo;favor&amp;rdquo; people from their school when applying for jobs or asking for favors.</description>
+    </item>
+    
+    <item>
+      <title>What Thais always ask when texting</title>
+      <link>/posts_o/what-thais-always-ask-when-texting/</link>
+      <pubDate>Wed, 06 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/what-thais-always-ask-when-texting/</guid>
+      <description>These days all the IMs (instant messeging) have a) profile picture and b) name. Assuming these two are out of the question, Thais will always ask *:
+* I know it’s a generalization but the percentage of Thais who do ask is far greater than those who don’t.
+ Are you male or female? **
+What is your age?
+(Bonus question) Are you Thai?
+** The conversation happened in English. Right away after saying hi.</description>
+    </item>
+    
+    <item>
+      <title>The state of Thai English texting group</title>
+      <link>/posts_o/the-state-of-thai-english-texting-group/</link>
+      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/posts_o/the-state-of-thai-english-texting-group/</guid>
+      <description>Most Thais can’t speak fluent English and this is a fact. But some like to pretend they can.
+I found a member recruitment post so I said to myself “hey this looks interesting-ish this is great finally Thais will have more resources to learn English.” Instant disappointment.
+The first group I was in was created by a Thai who wants to work in Europe. Her English? Mia Farang English — very broken English.</description>
     </item>
     
   </channel>
