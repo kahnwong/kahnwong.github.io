@@ -34,14 +34,15 @@
 
 <meta itemprop="name" content="Word-based analysis with song lyrics">
 <meta itemprop="description" content="I listen to a lot of music, mostly symphonic heavy metal. What&rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link here!">
-<meta itemprop="datePublished" content="2020-04-16T00:00:00&#43;00:00" />
-<meta itemprop="dateModified" content="2020-04-16T00:00:00&#43;00:00" />
+<meta itemprop="datePublished" content="2020-04-16T00:00:00+00:00" />
+<meta itemprop="dateModified" content="2020-04-16T00:00:00+00:00" />
 <meta itemprop="wordCount" content="1498">
 <meta itemprop="image" content="/"/>
 
 
 
 <meta itemprop="keywords" content="data analysis," />
+
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="/"/>
 
@@ -218,138 +219,138 @@ df
 </code></pre></div><table>
 <thead>
 <tr>
-<th align="right"></th>
-<th align="left">artist</th>
-<th align="left">album</th>
-<th align="left">title</th>
-<th align="left">lyrics</th>
-<th align="right">year</th>
-<th align="left">tokens</th>
-<th align="right">word_count</th>
-<th align="right">unique_word_count</th>
-<th align="left">decade</th>
+<th style="text-align:right"></th>
+<th style="text-align:left">artist</th>
+<th style="text-align:left">album</th>
+<th style="text-align:left">title</th>
+<th style="text-align:left">lyrics</th>
+<th style="text-align:right">year</th>
+<th style="text-align:left">tokens</th>
+<th style="text-align:right">word_count</th>
+<th style="text-align:right">unique_word_count</th>
+<th style="text-align:left">decade</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="right">0</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Elvenpath</td>
-<td align="left">(In the sh</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;shelter&rsquo;, &lsquo;shade&rsquo;, &lsquo;forest&rsquo;, &hellip;]</td>
-<td align="right">121</td>
-<td align="right">90</td>
-<td align="left">1990s</td>
+<td style="text-align:right">0</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Elvenpath</td>
+<td style="text-align:left">(In the sh</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;shelter&rsquo;, &lsquo;shade&rsquo;, &lsquo;forest&rsquo;, &hellip;]</td>
+<td style="text-align:right">121</td>
+<td style="text-align:right">90</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">1</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Beauty And The Beast</td>
-<td align="left">Remember t</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;rememb&rsquo;, &lsquo;danc&rsquo;, &lsquo;share&rsquo;, &hellip;]</td>
-<td align="right">74</td>
-<td align="right">56</td>
-<td align="left">1990s</td>
+<td style="text-align:right">1</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Beauty And The Beast</td>
+<td style="text-align:left">Remember t</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;rememb&rsquo;, &lsquo;danc&rsquo;, &lsquo;share&rsquo;, &hellip;]</td>
+<td style="text-align:right">74</td>
+<td style="text-align:right">56</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">2</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">The Carpenter</td>
-<td align="left">Who are yo</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;condemn&rsquo;, &lsquo;shine&rsquo;, &lsquo;salvat&rsquo;, &hellip;]</td>
-<td align="right">74</td>
-<td align="right">42</td>
-<td align="left">1990s</td>
+<td style="text-align:right">2</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">The Carpenter</td>
+<td style="text-align:left">Who are yo</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;condemn&rsquo;, &lsquo;shine&rsquo;, &lsquo;salvat&rsquo;, &hellip;]</td>
+<td style="text-align:right">74</td>
+<td style="text-align:right">42</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">3</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Astral Romance</td>
-<td align="left">A nocturna</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;nocturn&rsquo;, &lsquo;concerto&rsquo;, &lsquo;candlelight&rsquo;, &hellip;]</td>
-<td align="right">69</td>
-<td align="right">68</td>
-<td align="left">1990s</td>
+<td style="text-align:right">3</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Astral Romance</td>
+<td style="text-align:left">A nocturna</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;nocturn&rsquo;, &lsquo;concerto&rsquo;, &lsquo;candlelight&rsquo;, &hellip;]</td>
+<td style="text-align:right">69</td>
+<td style="text-align:right">68</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">4</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Angels Fall First</td>
-<td align="left">An angelfa</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;angelfac&rsquo;, &lsquo;smile&rsquo;, &lsquo;headlin&rsquo;, &hellip;]</td>
-<td align="right">68</td>
-<td align="right">49</td>
-<td align="left">1990s</td>
+<td style="text-align:right">4</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">An angelfa</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;angelfac&rsquo;, &lsquo;smile&rsquo;, &lsquo;headlin&rsquo;, &hellip;]</td>
+<td style="text-align:right">68</td>
+<td style="text-align:right">49</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">5</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Tutankhamen</td>
-<td align="left">As the sun</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;sun&rsquo;, &lsquo;set&rsquo;, &lsquo;pyramid&rsquo;, &hellip;]</td>
-<td align="right">67</td>
-<td align="right">41</td>
-<td align="left">1990s</td>
+<td style="text-align:right">5</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Tutankhamen</td>
+<td style="text-align:left">As the sun</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;sun&rsquo;, &lsquo;set&rsquo;, &lsquo;pyramid&rsquo;, &hellip;]</td>
+<td style="text-align:right">67</td>
+<td style="text-align:right">41</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">6</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Nymphomaniac Fantasia</td>
-<td align="left">The scent</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;scent&rsquo;, &lsquo;woman&rsquo;, &lsquo;&hellip;']</td>
-<td align="right">29</td>
-<td align="right">28</td>
-<td align="left">1990s</td>
+<td style="text-align:right">6</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Nymphomaniac Fantasia</td>
+<td style="text-align:left">The scent</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;scent&rsquo;, &lsquo;woman&rsquo;, &lsquo;&hellip;']</td>
+<td style="text-align:right">29</td>
+<td style="text-align:right">28</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">7</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Know Why The Nightingale Sings</td>
-<td align="left">What does</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;fall&rsquo;, &lsquo;feel&rsquo;, &lsquo;boy&rsquo;, &hellip;]</td>
-<td align="right">49</td>
-<td align="right">47</td>
-<td align="left">1990s</td>
+<td style="text-align:right">7</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Know Why The Nightingale Sings</td>
+<td style="text-align:left">What does</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;fall&rsquo;, &lsquo;feel&rsquo;, &lsquo;boy&rsquo;, &hellip;]</td>
+<td style="text-align:right">49</td>
+<td style="text-align:right">47</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">8</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Lappi (Lapland)</td>
-<td align="left">Part 1: Er</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;erämaajärvi&rsquo;, &lsquo;kautta&rsquo;, &lsquo;erämaajärven&rsquo;, &hellip;]</td>
-<td align="right">63</td>
-<td align="right">54</td>
-<td align="left">1990s</td>
+<td style="text-align:right">8</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Lappi (Lapland)</td>
+<td style="text-align:left">Part 1: Er</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;erämaajärvi&rsquo;, &lsquo;kautta&rsquo;, &lsquo;erämaajärven&rsquo;, &hellip;]</td>
+<td style="text-align:right">63</td>
+<td style="text-align:right">54</td>
+<td style="text-align:left">1990s</td>
 </tr>
 <tr>
-<td align="right">9</td>
-<td align="left">Nightwish</td>
-<td align="left">Angels Fall First</td>
-<td align="left">Once Upon A Troubadour</td>
-<td align="left">A lonely b</td>
-<td align="right">1996</td>
-<td align="left">[&lsquo;lone&rsquo;, &lsquo;bard&rsquo;, &lsquo;wander&rsquo;, &hellip;]</td>
-<td align="right">91</td>
-<td align="right">62</td>
-<td align="left">1990s</td>
+<td style="text-align:right">9</td>
+<td style="text-align:left">Nightwish</td>
+<td style="text-align:left">Angels Fall First</td>
+<td style="text-align:left">Once Upon A Troubadour</td>
+<td style="text-align:left">A lonely b</td>
+<td style="text-align:right">1996</td>
+<td style="text-align:left">[&lsquo;lone&rsquo;, &lsquo;bard&rsquo;, &lsquo;wander&rsquo;, &hellip;]</td>
+<td style="text-align:right">91</td>
+<td style="text-align:right">62</td>
+<td style="text-align:left">1990s</td>
 </tr>
 </tbody>
 </table>
