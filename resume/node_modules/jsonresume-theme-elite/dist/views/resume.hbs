@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimal-ui">
+    <title>{{#resume.basics}}{{name}}{{/resume.basics}}</title>
+    <style>
+        {{{css}}}
+    </style>
+</head>
+<body>
+    <div class="d-none">
+        {{{icons}}}
+    </div>
+    <div class="page">
+        <div class="sidebar">
+            {{> sections/sidebar/basic }}
+            {{> sections/sidebar/contact }}
+            {{> sections/sidebar/social }}
+            {{#if themeConfig.sidebarSkills}}
+                {{> sections/sidebar/skills }}
+            {{/if}}
+            {{#if themeConfig.sidebarLanguages}}
+                {{> sections/content/languages }}
+            {{/if}}
+            {{#if themeConfig.sidebarAwards}}
+                {{> sections/content/awards }}
+            {{/if}}
+            {{#if themeConfig.sidebarInterests}}
+                {{> sections/content/interests }}
+            {{/if}}
+            {{#if themeConfig.sidebarPublications}}
+                {{> sections/content/publications }}
+            {{/if}}
+            {{#if themeConfig.sidebarCertifications}}
+                {{> sections/content/certifications }}
+            {{/if}}
+            {{#if themeConfig.sidebarReferences}}
+                {{> sections/content/references }}
+            {{/if}}
+            {{#if themeConfig.sidebarVolunteer}}
+                {{> sections/content/volunteer }}
+            {{/if}}
+        </div>
+        <div class="content">
+            {{#if themeConfig.watermark}}
+                {{> sections/content/watermark }}
+            {{/if}}
+            {{> sections/content/summary }}
+            {{> sections/content/work }}
+            {{> sections/content/education }}
+
+            {{#unless themeConfig.sidebarAwards}}
+                {{> sections/content/awards }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarPublications}}
+                {{> sections/content/publications }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarVolunteer}}
+                {{> sections/content/volunteer }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarSkills}}
+                {{> sections/content/skills }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarLanguages}}
+                {{> sections/content/languages }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarInterests}}
+                {{> sections/content/interests }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarReferences}}
+                {{> sections/content/references }}
+            {{/unless}}
+            {{#unless themeConfig.sidebarCertifications}}
+                {{> sections/content/certifications }}
+            {{/unless}}
+        </div>
+    </div>
+
+    <script>
+        var pageHeights = {
+          letter: 792,
+          a4: 842
+        }
+        var pageHeight = pageHeights['{{lowercase format}}']
+        var html = document.querySelector('.page')
+        var height = html.scrollHeight
+
+        if (height/pageHeight !== 0) {
+          html.style.height = (Math.ceil(height/pageHeight) * pageHeight) + 'px'
+        }
+    </script>
+</body>
+</html>

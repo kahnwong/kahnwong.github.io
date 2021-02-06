@@ -5,6 +5,178 @@
     <link>/categories/</link>
     <description>Recent content in Categories on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <lastBuildDate>Sun, 31 Jan 2021 17:40:53 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>data engineering</title>
+      <link>/categories/data-engineering/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/categories/data-engineering/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gis</title>
+      <link>/categories/gis/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/categories/gis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>infra</title>
+      <link>/categories/infra/</link>
+      <pubDate>Wed, 27 Jan 2021 04:51:41 +0000</pubDate>
+      
+      <guid>/categories/infra/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>food-for-thought</title>
+      <link>/categories/food-for-thought/</link>
+      <pubDate>Sun, 20 Dec 2020 19:12:38 +0000</pubDate>
+      
+      <guid>/categories/food-for-thought/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>media</title>
+      <link>/categories/media/</link>
+      <pubDate>Tue, 01 Dec 2020 10:28:01 +0000</pubDate>
+      
+      <guid>/categories/media/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>data analysis</title>
+      <link>/categories/data-analysis/</link>
+      <pubDate>Thu, 03 Sep 2020 12:04:42 +0000</pubDate>
+      
+      <guid>/categories/data-analysis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>celiac</title>
+      <link>/categories/celiac/</link>
+      <pubDate>Fri, 14 Aug 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/celiac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>food</title>
+      <link>/categories/food/</link>
+      <pubDate>Fri, 14 Aug 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/food/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>data science</title>
+      <link>/categories/data-science/</link>
+      <pubDate>Fri, 22 May 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/data-science/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Thailand</title>
+      <link>/categories/thailand/</link>
+      <pubDate>Sun, 26 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/thailand/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>languages</title>
+      <link>/categories/languages/</link>
+      <pubDate>Mon, 06 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/languages/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Thai</title>
+      <link>/categories/thai/</link>
+      <pubDate>Mon, 06 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/thai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Indic</title>
+      <link>/categories/indic/</link>
+      <pubDate>Wed, 10 Oct 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/indic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>refugees</title>
+      <link>/categories/refugees/</link>
+      <pubDate>Mon, 30 Jul 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/refugees/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Farsi</title>
+      <link>/categories/farsi/</link>
+      <pubDate>Thu, 23 Nov 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/farsi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>culture</title>
+      <link>/categories/culture/</link>
+      <pubDate>Fri, 08 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/culture/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>LGBT</title>
+      <link>/categories/lgbt/</link>
+      <pubDate>Fri, 08 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/lgbt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>English</title>
+      <link>/categories/english/</link>
+      <pubDate>Fri, 01 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ESL</title>
+      <link>/categories/esl/</link>
+      <pubDate>Fri, 01 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/categories/esl/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

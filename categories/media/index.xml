@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>media on Karn Wong</title>
+    <link>/categories/media/</link>
+    <description>Recent content in media on Karn Wong</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 01 Dec 2020 10:28:01 +0000</lastBuildDate><atom:link href="/categories/media/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>There are caveats behind every statement</title>
+      <link>/post/there-are-caveats-behind-every-statement/</link>
+      <pubDate>Tue, 01 Dec 2020 10:28:01 +0000</pubDate>
+      
+      <guid>/post/there-are-caveats-behind-every-statement/</guid>
+      <description>You may have come across news headlines with something like &amp;ldquo;woman diagnoses herself with rare disease.&amp;rdquo;
+If you take this statement at face value, you might think &amp;ldquo;hmmm so this woman, out of the blue, just diagnose herself with a rare disease.&amp;rdquo;
+What most people don&amp;rsquo;t often realize is that for a rare disease to be considered, she must have gone through many different doctors who diagnosed her with various diseases, but she feels that neither of them accurately describe her symptoms.</description>
+    </item>
+    
+  </channel>
+</rss>

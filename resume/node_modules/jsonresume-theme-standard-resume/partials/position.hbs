@@ -1,0 +1,21 @@
+<h4>
+  {{#if position}}
+    {{position}}
+  {{/if}}
+
+  {{> date-range}}
+</h4>
+
+{{#if summary}}
+  <div class="summary">
+    <p>{{summary}}</p>
+  </div>
+{{/if}}
+
+{{#if highlights.length}}
+  <ul class="highlights">
+    {{#each highlights}}
+      <li>{{.}}</li>
+    {{/each}}
+  </ul>
+{{/if}}

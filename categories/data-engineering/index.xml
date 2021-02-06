@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>data engineering on Karn Wong</title>
+    <link>/categories/data-engineering/</link>
+    <description>Recent content in data engineering on Karn Wong</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 31 Jan 2021 17:40:53 +0000</lastBuildDate><atom:link href="/categories/data-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Workarounds for archiving large shapefile in data lake</title>
+      <link>/post/workarounds-for-archiving-large-shapefile-in-data-lake/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/post/workarounds-for-archiving-large-shapefile-in-data-lake/</guid>
+      <description>If you work with spatial data, chances are you are familiar with shapefile, a file format for viewing / editing spatial data.
+Essentially, shapefile is just a tabular data like csv, but it does thingamajig with geometry data type, where any gis tools like qgis or arcgis can understand right away. If you have a csv file with geometry column in wkt format (something like POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))), you&amp;rsquo;ll have to specify which column is to be used for geometry.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -6,7 +6,73 @@
     <description>Recent content on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 15 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 31 Jan 2021 17:40:53 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Workarounds for archiving large shapefile in data lake</title>
+      <link>/post/workarounds-for-archiving-large-shapefile-in-data-lake/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/post/workarounds-for-archiving-large-shapefile-in-data-lake/</guid>
+      <description>If you work with spatial data, chances are you are familiar with shapefile, a file format for viewing / editing spatial data.
+Essentially, shapefile is just a tabular data like csv, but it does thingamajig with geometry data type, where any gis tools like qgis or arcgis can understand right away. If you have a csv file with geometry column in wkt format (something like POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))), you&amp;rsquo;ll have to specify which column is to be used for geometry.</description>
+    </item>
+    
+    <item>
+      <title>Mongodb export woes</title>
+      <link>/post/mongodb-export-woes/</link>
+      <pubDate>Wed, 27 Jan 2021 04:51:41 +0000</pubDate>
+      
+      <guid>/post/mongodb-export-woes/</guid>
+      <description>There&amp;rsquo;s a task where I need to export 4M+ records out of mongodb, total uncompressed size is 17GB+ 26GB
+export methods mongoexport The recommended way to export is using mongoexport utility, but you have to specify the output attributes, which doesn&amp;rsquo;t work for me because the schema from older set of records are less than the newer set
+DIY python script the vanilla way But you can interact with mongodb from python, and if you read from it it&amp;rsquo;ll return a dict, which is perfect for this because you don&amp;rsquo;t have to specify the required attributes beforehand.</description>
+    </item>
+    
+    <item>
+      <title>CPU upgrade is a breeze, only if you know how</title>
+      <link>/post/upgrading-cpu-is-hard/</link>
+      <pubDate>Sun, 20 Dec 2020 19:12:38 +0000</pubDate>
+      
+      <guid>/post/upgrading-cpu-is-hard/</guid>
+      <description>I want to update my pc config to use a more powerful cpu (from Ryzen 1300x &amp;ndash;&amp;gt; Ryzen 3600). Watched a few videos and it didn&amp;rsquo;t look complicated enough, so I order the new CPU and plan to install it myself. Things didn&amp;rsquo;t go exactly to plan. To sum up relevant things I didn&amp;rsquo;t know from watching &amp;ldquo;how to install AM4 CPU&amp;rdquo; videos:
+ on some motherboard, you need to &amp;ldquo;support&amp;rdquo; the backplate from under the motherboard so the socket would protrude far up enough to &amp;ldquo;lock&amp;rdquo; the CPU fan.</description>
+    </item>
+    
+    <item>
+      <title>เป็นหมอไม่ได้แปลว่าเป็นคนดี</title>
+      <link>/post/epnhm-aimaidaeplwaaepnkhndii/</link>
+      <pubDate>Sat, 05 Dec 2020 15:18:17 +0000</pubDate>
+      
+      <guid>/post/epnhm-aimaidaeplwaaepnkhndii/</guid>
+      <description>เมื่อ 2-3 อาทิตย์ก่อน เห็นน้องที่ทำงานลนๆ กัน เลยได้ความว่า มีน้องคนนึงเขาปวดท้อง จุกเสียด ตั้งแต่คืนวันก่อน แต่ไม่มีอาการท้องเสีย แล้วน้องเขาปวดท้องมาก พี่หัวหน้าทีมก็เลยจะหาน้องคนนี้ไปโรงพยาบาลใกล้ๆ
+พอดีแม่เราเป็นพยาบาล เลยให้น้องลองคุยกับแม่เราก่อน เบื้องต้นจะได้รู้ว่าอาการร้ายแรงมั้ย แม่เราสรุปว่า น้องเขาอาหารไม่ย่อย ประกอบกับวันก่อนน้องกินหอยทอด ก็มีความเป็นไปได้สูงว่าหอยอาจจะไม่สุกดี
+ตอนเย็นๆ วันเดียวกัน เราถามหัวหน้าทีมน้องเขาว่า หมอเขาบอกว่าน้องเป็นอะไร หมอบอกว่าเป็น อาหารเป็นพิษ
+แต่ อาการของอาหารเป็นพิษ คือ ท้องเสีย ไม่ได้ปวดท้องข้ามวันข้ามคืน ซึ่งคำอธิบายว่า ทำไมหมอถึงวินิจฉัยว่าเป็นอาหารเป็นพิษนั้น ก็เพราะว่าสมัยนี้ถ้าเป็นอาการกลุ่มอาหารไม่ย่อย อาหารเป็นพิษ เขาจะให้ยาฆ่าเชื้อกันไว้ก่อน แต่นั้นหมายความว่า ในบางกรณีที่ไม่จำเป็นต้องกินยาฆ่าเชื้อ ก็จะมีการจ่ายยาฆ่าเชื้อให้โดยไม่จำเป็น และอย่าลืมว่า บิลจะราคาแพงกว่าเดิม
+อย่างในเคสของน้องในบทความนี้ น้องไม่ได้แสดงอาการท้องเสีย ซึ่งไม่มีความจำเป็นใดๆ เลยที่ต้องให้ยาฆ่าเชื้อ แต่ ถ้าให้ยาฆ่าเชื้อ มันก็ง่ายในการรักษา เพราะว่าไม่ว่าจะเป็นอาหารเป็นพิษหรือไม่ย่อย รักษาแบบเดียวกันได้ และปิดเคสได้ไว ได้ตังเยอะกว่าด้วยเพราะต้องคิดค่ายาฆ่าเชื้อ
+และนี่ก็เป็นเหตุผลเดียวกับการที่ว่า ทำไมหมอถึงผ่าคลอดโดยไม่จำเป็น บางเคสสามารถคลอดธรรมชาติได้ แต่หมอเลือกที่จะผ่า เพราะว่าใช้เวลาน้อยกว่าคลอดแบบธรรมชาติ หมอปิดเคสได้เยอะกว่า และได้ตังเยอะกว่าเช่นกัน
+อย่าลืมว่า คนที่เรียนแพทย์มาเป็นหมอได้หมดถ้าสอบใบกระกอบได้ ต่อให้จะอยู่อันดับสุดท้ายของชั้นก็ตาม</description>
+    </item>
+    
+    <item>
+      <title>There are caveats behind every statement</title>
+      <link>/post/there-are-caveats-behind-every-statement/</link>
+      <pubDate>Tue, 01 Dec 2020 10:28:01 +0000</pubDate>
+      
+      <guid>/post/there-are-caveats-behind-every-statement/</guid>
+      <description>You may have come across news headlines with something like &amp;ldquo;woman diagnoses herself with rare disease.&amp;rdquo;
+If you take this statement at face value, you might think &amp;ldquo;hmmm so this woman, out of the blue, just diagnose herself with a rare disease.&amp;rdquo;
+What most people don&amp;rsquo;t often realize is that for a rare disease to be considered, she must have gone through many different doctors who diagnosed her with various diseases, but she feels that neither of them accurately describe her symptoms.</description>
+    </item>
+    
+    <item>
+      <title>Visualizing map region prefix/suffix</title>
+      <link>/post/visualizing-map-region-prefix-suffix/</link>
+      <pubDate>Thu, 03 Sep 2020 12:04:42 +0000</pubDate>
+      
+      <guid>/post/visualizing-map-region-prefix-suffix/</guid>
+      <description>import pandas as pd import numpy as np import geopandas as gpd import geoplot as gplt import matplotlib.pyplot as plt from geoplot import polyplot from pythainlp.tokenize import word_tokenize, syllable_tokenize Data structure  name: target region name geometry: spatial column *: parent region name, e.g. in &amp;ldquo;district&amp;rdquo; dataset it would have a &amp;ldquo;province&amp;rdquo; column  Dissolving dataset in case you have multiple region level in the same file # assuming you have a district dataset and want to dissolve to province only district_filename = &amp;#34;FILE_PATH_HERE&amp;#34; gdf = gpd.</description>
+    </item>
+    
     <item>
       <title>แทคติคสอบถามโรงงานเรื่องกลูเตน</title>
       <link>/posts_o/%E0%B9%81%E0%B8%97%E0%B8%84%E0%B8%95%E0%B8%B4%E0%B8%84%E0%B8%AA%E0%B8%AD%E0%B8%9A%E0%B8%96%E0%B8%B2%E0%B8%A1%E0%B9%82%E0%B8%A3%E0%B8%87%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99/</link>
@@ -20,6 +86,28 @@
     </item>
     
     <item>
+      <title>แทคติคสอบถามโรงงานเรื่องกลูเตน</title>
+      <link>/post/aethkhtikhs-bthaamorngngaaneruue-ngkluuetn/</link>
+      <pubDate>Fri, 14 Aug 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/aethkhtikhs-bthaamorngngaaneruue-ngkluuetn/</guid>
+      <description>มนุษย์ทุกคนต้องการอาหาร ไม่งั้นก็อยู่ไม่ได้เพราะหิวตายไปก่อน แต่ก็จะมีคนบางกลุ่มที่กินอาหารบางอย่างไม่ได้ อันนี้ก็ถือว่าเป็นความเคราะห์ร้ายไป แต่นั่นไม่ได้แปลว่า วงการอาหารควรจะนอนนิ่งเฉย เพราะบทคนกินอาหารบางอย่างไม่ได้ ไม่ใช่ว่าเขาเลือกที่จะไม่กิน แต่เขากินไม่ได้ จะตอบแบบกำปั้นทุบดินว่าจริงๆ แล้วกินได้ก็ใช่ แต่กินแล้วจะผื่นขึ้น ลำคอตีบ ปากบวม ท้องเสีย อะไรก็ว่าไป ซึ่งอาการไม่พึงประสงค์เหล่านี่ไม่ควรเกิดขึ้น
+ตัวอาหารที่บางคนกินไม่ได้อาจจะเป็นตัวที่คนกินไม่ได้กันเยอะ อันนี้ก็ถือว่าโชคดี เพราะนั่นแปลว่าผู้ผลิตส่วนใหญ่จะแจ้งไว้บนฉลาก เช่น ไข่ นม แต่ ถ้าดันงอแงกับตัวแปลกๆ ที่คนไม่ค่อยรู้จักกัน อันนี้เริ่มจะอยู่ยาก บุฟเฟ่ร้านดัง อาหารร้านเด็ด โบกมือลาได้เลย
+แล้วกลูเตนเกี่ยวอะไรด้วย? ความงอแงของคนที่กินกลูเตนไม่ได้ คือ ตัวนี้ผู้ประกอบการไม่ค่อยรู้จักกันว่ามันคืออะไร ต่อให้รู้จักก็ไม่ค่อยรู้อีกว่ามันจะไปอยู่ตรงไหนบ้าง ตามตำราก็จะบอกว่า กลูเตนเจอได้ในข้าวสาลี ไรย์ บาเลย์ มอลต์ แต่อันนี้มันเป็นต้นตอไง พอเข้าสู่กระบวนการผลิตมันไปกระจายทิ้งได้หลายจุดมาก เช่น ถ้าเป็นถั่ว บางทีตอนขนส่งเขาให้อุปกรณ์ร่วมกับการขนส่งข้าวสาลี ละอองข้าวสาลีติดถั่ว = ปนเปื้อนกลูเตน
+บางคนอาจจะมีคำถามว่า ซีเรียสไปรึเปล่า แค่นี้เองก็กินไม่ได้เหรอ ก็จะขอตอบว่า คนที่ไม่กินกลูเต็นมีอยู่สามประเภทหลักๆ คือ คนที่แพ้แป้งสาลี คนที่ย่อยกลูเตนไม่ได้ และ คนที่ร่างกายเข้าใจว่ากลูเตนเป็นสิ่งแปลกปลอม เลยต้องกำจัดทิ้ง (celiac) &amp;ndash;&amp;gt; ลำไส้โดนกัด ทีนี้ คนที่แพ้แป้งสาลี อาการก็จะเหมือนคนที่แพ้กุ้ง ปลา ที่อาจจะทนปริมาณน้อยๆ ได้ เช่นเดียวกับคนที่ย่อยกลูเตนไม่ได้ แต่มนุษย์ celiac นั้น กลูเตนน้อยแค่ไหนก็เจ็บตัว</description>
+    </item>
+    
+    <item>
+      <title>Impute pipelines</title>
+      <link>/post/impute-pipelines/</link>
+      <pubDate>Fri, 22 May 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/impute-pipelines/</guid>
+      <description>Imagine having a dataset that you need to use for training a prediction model, but some of the features are missing. The good news is you don&amp;rsquo;t need to throw some data away, just have to impute them. Below are steps you can take in order to create an imputation pipeline. Github link here!
+from random import randint import pandas as pd import numpy as np from sklearn.preprocessing import OneHotEncoder from sklearn.</description>
+    </item>
+    
+    <item>
       <title>Word-based analysis with song lyrics</title>
       <link>/posts_o/word-based-analysis-with-song-lyrics/</link>
       <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
@@ -29,11 +117,34 @@
     </item>
     
     <item>
+      <title>Word-based analysis with song lyrics</title>
+      <link>/post/word-based-analysis-with-song-lyrics/</link>
+      <pubDate>Wed, 15 Apr 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/word-based-analysis-with-song-lyrics/</guid>
+      <description>I listen to a lot of music, mostly symphonic heavy metal. What&amp;rsquo;s interesting is that in this genre, each album often has different themes, also each band focus on different topics in terms of lyrics. For instance, Nightwish focuses on nature, and their Imaginaerum album focuses on evolution. So I thought it would be interesting if I apply various text analysis methods to the lyrics, which resulted in this article. Github link here!</description>
+    </item>
+    
+    <item>
       <title>อยู่เมืองไทยกินกลูเตนไม่ได้ช่างลำบาก</title>
       <link>/posts_o/%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</link>
       <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts_o/%E0%B8%AD%E0%B8%A2%E0%B8%B9%E0%B9%88%E0%B9%80%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B8%87%E0%B9%84%E0%B8%97%E0%B8%A2%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%81%E0%B8%A5%E0%B8%B9%E0%B9%80%E0%B8%95%E0%B8%99%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B3%E0%B8%9A%E0%B8%B2%E0%B8%81/</guid>
+      <description>เดี๋ยวนี้หันไปทางไหนก็เห็นแต่กระแสกลูเต็นฟรี นี่มองละเบะปากเพราะเกือบทั้งหมดฉันกินไม่ได้ จะไปกินได้ยังไงในเมื่อพวกนี้มันกะอัพราคากับมนุษย์ที่หลงกระแส ไม่ได้ทำมาให้พวกคนที่กินกลูเตนไม่ได้จริงๆ กิน
+แล้วอย่าคิดว่าอ่านฉลากดีๆ แล้วจะรอด เพราะฉลากอาหารไทยนั้นลึก ลึกมากจนฉันเข้าไม่ถึง ตัวอย่างเบาะๆ ก็เช่น:
+ หมูหมักซีอิ้ว แจ้งแค่ว่ามีถั่วเหลือง (ซีอิ้วหมักกับแป้งสาลี) ฉลากแปะช็อคโกแลตนำเข้า ที่ฉลากต้นทางเขียนว่ามีสารก่อภูมิแพ้สี่ห้าอย่างได้ ฉลากไทยเขียนแค่สอง และแน่นอนว่ากลูเตนไม่ค่อยโผล่ในฉลากไทย ต่อให้ฉลากต้นทางมันจะเขียนตัวหนามาก็ตาม  ที่ลำไยกว่าคือ ครั้นจะโทรถามโรงงานผลิตนี่ก็ต้องมาลุ้นอีกว่าเค้าจะรู้งานดีแค่ไหน บางทีแจ็คพอตพนักงานมีคุณภาพก็รอดไป แต่ส่วนใหญ่เจอน้อย ส่วนมากจะตอบแบบขอไปที ตอบแบบส่งๆ หรือไม่โทรกลับเลยก้มี (และแน่นอนว่าฉันจดชื่อบริษัทขึ้นบัญชีหนังหมาไว้แล้ว)
+ที่เจอสดๆ วันนี้เลยก็คือ โทรไปถามโรงงานปลากระป๋องว่า ฉลากแจ้งกลูเตนสองระดับมั้ย ระดับแรกคือ ใส่ส่วนผสมนี้ลงไปในผลิตภัณฑ์จริงๆ ระดับสองคือ อาจจะมีส่วนผสมของ&amp;hellip;. มาจากการะบวนการผลิตที่ใช้อุปกรณ์ร่วมกัน ที่ถามแบบนี้เพราะว่า การแจ้ง &amp;ldquo;อาจจะมีส่วนผสมของ&amp;hellip;&amp;rdquo; ไม่ได้ทำกันทุกที่ และต่อให้ทำก็ใช่ว่าจะแจ้งกลูเตนกัน
+มันพีคตรงที่พอพนง.ฟังแล้วก็บอกเลยว่า ผลิตภัณฑ์เราไม่มีกลูเตนเลย ในใจนี่เริ่มเดือดละ วันก่อนเห็นเต็มสองตาว่ามีทูน่าหมักซีอิ๊วญี่ปุ่น ฉลากแจ้งด้วยนะว่ามีแป้งสาลี อ่ะนี่ก็บอกให้ทางนั้นไปเช็คมา
+สามชั่วโมงผ่านไป พนง.โทรกลับมาแจ้งว่า ทางบริษัทมีการแจ้งกลูเตนจากโชยุ แต่ประทานโทษ นั่นไม่ใช่คำถามฉัน นี่ต้องจี้แล้วจี้อีก ทางนั้นบทจะหนีก็ไล่ให้ไปอ่านฉลาก ถ้าอ่านมาจนถึงตรงนี้คิดว่าหลายๆ คนคงดูออกว่า ถ้าฉลากมันเชื่อถือได้ฉันคงไม่เสียค่าโทรศัพท์นั่งโทรถามหรอก เปลืองตังแถมเสียเวลาอีก สุดท้ายเลยจี้ถามว่า ถ้ามีผลิตภัณฑ์ ก ที่มีกลูเตน และผลิตภัณฑ์ ข ที่ไม่มีกลูเตน แต่ใช้สายผลิตร่วมกัน มีการตรวจสอบปริมาณกลูเตนตกค้างมั้ยว่าเจอเท่าไหร่ ทางนั้นก็ไปให้คนอ่านกล่องตัวทดสอบกลูเตนมา สรุปว่าฉันกินได้อย่างสบายใจถ้าไม่เจอคำว่า กลูเตน หรือ แป้งสาลีบนฉลาก</description>
+    </item>
+    
+    <item>
+      <title>อยู่เมืองไทยกินกลูเตนไม่ได้ช่างลำบาก</title>
+      <link>/post/yuuemuue-ngaithykinkluuetnaimaidchaanglambaak/</link>
+      <pubDate>Sun, 26 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/yuuemuue-ngaithykinkluuetnaimaidchaanglambaak/</guid>
       <description>เดี๋ยวนี้หันไปทางไหนก็เห็นแต่กระแสกลูเต็นฟรี นี่มองละเบะปากเพราะเกือบทั้งหมดฉันกินไม่ได้ จะไปกินได้ยังไงในเมื่อพวกนี้มันกะอัพราคากับมนุษย์ที่หลงกระแส ไม่ได้ทำมาให้พวกคนที่กินกลูเตนไม่ได้จริงๆ กิน
 แล้วอย่าคิดว่าอ่านฉลากดีๆ แล้วจะรอด เพราะฉลากอาหารไทยนั้นลึก ลึกมากจนฉันเข้าไม่ถึง ตัวอย่างเบาะๆ ก็เช่น:
  หมูหมักซีอิ้ว แจ้งแค่ว่ามีถั่วเหลือง (ซีอิ้วหมักกับแป้งสาลี) ฉลากแปะช็อคโกแลตนำเข้า ที่ฉลากต้นทางเขียนว่ามีสารก่อภูมิแพ้สี่ห้าอย่างได้ ฉลากไทยเขียนแค่สอง และแน่นอนว่ากลูเตนไม่ค่อยโผล่ในฉลากไทย ต่อให้ฉลากต้นทางมันจะเขียนตัวหนามาก็ตาม  ที่ลำไยกว่าคือ ครั้นจะโทรถามโรงงานผลิตนี่ก็ต้องมาลุ้นอีกว่าเค้าจะรู้งานดีแค่ไหน บางทีแจ็คพอตพนักงานมีคุณภาพก็รอดไป แต่ส่วนใหญ่เจอน้อย ส่วนมากจะตอบแบบขอไปที ตอบแบบส่งๆ หรือไม่โทรกลับเลยก้มี (และแน่นอนว่าฉันจดชื่อบริษัทขึ้นบัญชีหนังหมาไว้แล้ว)
@@ -53,6 +164,16 @@ If you bake pizza using gluten-free flour in the same oven as regular pizza, it 
     </item>
     
     <item>
+      <title>My diet is not for you to market it as healthy</title>
+      <link>/post/my-diet-is-not-for-you-to-market-it-as-healthy/</link>
+      <pubDate>Sat, 11 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/my-diet-is-not-for-you-to-market-it-as-healthy/</guid>
+      <description>Assuming you&amp;rsquo;re from the Anglosphere or live in trendy neighborhoods, you will see a lot of places offering gluten-free options and slapping &amp;ldquo;healthy&amp;rdquo; label on it. The problem arises when restauraners see the opportunity to cash in the gluten-free wave and start offering gluten-free options. This is an issue because, gluten-free is not just eliminating wheat, barley, rye or oat. It&amp;rsquo;s more than that.
+If you bake pizza using gluten-free flour in the same oven as regular pizza, it is considered cross-contaminated from floating flour dust in the air and some flour bits sticking to the oven, meaning it would contain gluten even if you use gluten-free flour.</description>
+    </item>
+    
+    <item>
       <title>ความน่าปวดหัวของการถอดอักษรไทยเป็นตัวโรมัน</title>
       <link>/posts_o/the-confusing-case-of-thai-transliteration-system-th/</link>
       <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
@@ -60,6 +181,17 @@ If you bake pizza using gluten-free flour in the same oven as regular pizza, it 
       <guid>/posts_o/the-confusing-case-of-thai-transliteration-system-th/</guid>
       <description>English Version
 *ตัวโรมัน = a b c d e f g &amp;hellip;
+วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:
+   Thai Romanization Romanization System Pronunciation Source     เทเวศ The-wet RTGS Tae-wet Pali-Sanskrit   สุวรรณภูมิ Suvarnabhumi Devanagari transliteration Su-wan*-na-poom *&amp;lsquo;a&amp;rsquo; as in father Pali-Sanskrit   ดินแดง Din-daeng RTGS Din-daeng Thai   ศรีราชา Sri Racha Mixed:Sri - Devanagari transliterationRacha - RTGS See-ra-cha Pali-Sanskrit    จะเห็นได้ว่าคำที่ต้นทางมาจากภาษาเดียวกันยังใช้คนละระบบในการถอดอักษรซะงั้น ที่เหนือกว่านั้นคือคำที่มาจาก บาลี-สันสกฤต นี่ก็ดันใช้ทั้งสองระบบถอดเสียงดื้อๆ โดยที่ไม่แคร์ว่าต่างชาติจะงงเบอร์ไหน</description>
+    </item>
+    
+    <item>
+      <title>ความน่าปวดหัวของการถอดอักษรไทยเป็นตัวโรมัน</title>
+      <link>/post/khwaamnaapwdhawkh-ngkaarth-d-aksraithyepntaworman/</link>
+      <pubDate>Mon, 06 Jan 2020 17:00:00 +0000</pubDate>
+      
+      <guid>/post/khwaamnaapwdhawkh-ngkaarth-d-aksraithyepntaworman/</guid>
+      <description>*ตัวโรมัน = a b c d e f g &amp;hellip;
 วันดีคืนดีชาวต่างชาติอยากมาเมืองไทย แต่จะมาเพราะอะไรนี่ก็ไม่ขอยุ่ง ไม่ได้สู่รู้เบอร์นั้น อนุมานว่ามาจากแถบยุโรป อเมริกาอะไรเทือกนี้ก็น่าจะเครื่องลงที่สุวรรณภูมิ ปัญหาที่จะเจออย่างแรกเลยก็คือ ชื่อป้ายชื่ออะไรไม่ได้ออกเสียงเหมือนที่ตัวโรมันเขียนไว้ เรื่องของเรื่องคือป้ายชื่อในไทยจะใช้ระบบ Royal Thai General System of Transcription ของ ราชบัณฑิตยสถาน แล้วปัญหาหลักๆ เลยก็คือมันไม่ได้สื่อว่าจริงๆ แล้วคำมันควรออกเสียงยังไง เช่น:
    Thai Romanization Romanization System Pronunciation Source     เทเวศ The-wet RTGS Tae-wet Pali-Sanskrit   สุวรรณภูมิ Suvarnabhumi Devanagari transliteration Su-wan*-na-poom *&amp;lsquo;a&amp;rsquo; as in father Pali-Sanskrit   ดินแดง Din-daeng RTGS Din-daeng Thai   ศรีราชา Sri Racha Mixed:Sri - Devanagari transliterationRacha - RTGS See-ra-cha Pali-Sanskrit    จะเห็นได้ว่าคำที่ต้นทางมาจากภาษาเดียวกันยังใช้คนละระบบในการถอดอักษรซะงั้น ที่เหนือกว่านั้นคือคำที่มาจาก บาลี-สันสกฤต นี่ก็ดันใช้ทั้งสองระบบถอดเสียงดื้อๆ โดยที่ไม่แคร์ว่าต่างชาติจะงงเบอร์ไหน</description>
     </item>
@@ -94,11 +226,30 @@ But you react to food? So how&amp;rsquo;s that not an allergy? Because I don&amp
     </item>
     
     <item>
+      <title>Loanwords are okay</title>
+      <link>/post/loanwords-are-okay/</link>
+      <pubDate>Wed, 06 Nov 2019 17:00:00 +0000</pubDate>
+      
+      <guid>/post/loanwords-are-okay/</guid>
+      <description>Does it matter if you language has a lot of loanwords? To be considered a loan, it has to be of foreign origin, and speakers from the borrowing end can understand and use in various contexts. It&amp;rsquo;s perfectly okay for the meaning to shift on the borrowing end, as semantic shift happens naturally. It does not make the word &amp;ldquo;unpure&amp;rdquo; or anything, it&amp;rsquo;s just how things happen. The borrowing language may have different point of view or context, so not all properties from the source can be carried over.</description>
+    </item>
+    
+    <item>
       <title>Indic name mistransliteration in Thai version of Harry Potter</title>
       <link>/posts_o/indic-name-misromanization-in-thai-version-of-harry-potter/</link>
       <pubDate>Thu, 11 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>/posts_o/indic-name-misromanization-in-thai-version-of-harry-potter/</guid>
+      <description>I read Harry Potter as a kid, and I couldn&amp;rsquo;t shake the feeling that one character&amp;rsquo;s name is a bit off. I couldn&amp;rsquo;t quite pinpoint exactly why. Turns out, my hunch was right – the Thai translator used the wrong transliteration.
+In Thai, &amp;ldquo;Parvati Patil&amp;rdquo; is &amp;ldquo;ปาราวตี พาติล.&amp;rdquo; This doesn&amp;rsquo;t even match the English transliteration (from Indic), as seen by a completely messed up second syllable on the first name. Because Thai language has a lot of influences from Indic, we also have our own system of transliterating Indic to Thai.</description>
+    </item>
+    
+    <item>
+      <title>Indic name mistransliteration in Thai version of Harry Potter</title>
+      <link>/post/indic-name-mistransliteration-in-thai-version-of-harry-potter/</link>
+      <pubDate>Wed, 10 Oct 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/post/indic-name-mistransliteration-in-thai-version-of-harry-potter/</guid>
       <description>I read Harry Potter as a kid, and I couldn&amp;rsquo;t shake the feeling that one character&amp;rsquo;s name is a bit off. I couldn&amp;rsquo;t quite pinpoint exactly why. Turns out, my hunch was right – the Thai translator used the wrong transliteration.
 In Thai, &amp;ldquo;Parvati Patil&amp;rdquo; is &amp;ldquo;ปาราวตี พาติล.&amp;rdquo; This doesn&amp;rsquo;t even match the English transliteration (from Indic), as seen by a completely messed up second syllable on the first name. Because Thai language has a lot of influences from Indic, we also have our own system of transliterating Indic to Thai.</description>
     </item>
@@ -114,6 +265,34 @@ In this analysis, I use pandas for dataframe, numpy for dealing with numbers (be
     </item>
     
     <item>
+      <title>Definition of &#39;a Word&#39;</title>
+      <link>/post/definition-of-a-word/</link>
+      <pubDate>Mon, 30 Jul 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/post/definition-of-a-word/</guid>
+      <description>You often hear people say &amp;ldquo;you need to know x words in y language to be able to understand basic conversations.&amp;rdquo;. This is a bit misleading, since the definition of &amp;ldquo;word&amp;rdquo; is varied. For example, in Chinese (yes, I know, Chinese as a language doesn&amp;rsquo;t exist, but I digress) one character (one block) is one word. So this is easy. Then you have Japanese, where the same kanji (Hanzi, Chinese characters) can be pronounced differently, each with different meaning.</description>
+    </item>
+    
+    <item>
+      <title>Resettled refugees in Sweden</title>
+      <link>/post/resettled-refugees-in-sweden/</link>
+      <pubDate>Mon, 30 Jul 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/post/resettled-refugees-in-sweden/</guid>
+      <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
+In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
+    </item>
+    
+    <item>
+      <title>How angur became องุ่น</title>
+      <link>/post/how-angur-became-ngun/</link>
+      <pubDate>Thu, 23 Nov 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/how-angur-became-ngun/</guid>
+      <description>More often than not, Thai loanwords are of Indic, Khmer, English or Chinese origin. Although loans from other languages do exist. For instance, องุ่น (grape). This word is of Persian origin (read: Iran), which is انگور, literally angur. In Thai it&amp;rsquo;s angun. Notice that it&amp;rsquo;s n at the end instead of the original r. The reason is because in Thai r as end consonant doesn&amp;rsquo;t exist, instead substituted with n. For example, the Sanskrit loanword ahar is pronounced as aha[n] in Thai.</description>
+    </item>
+    
+    <item>
       <title>The confusing case of Thai romanization system</title>
       <link>/posts_o/the-confusing-case-of-thai-transliteration-system/</link>
       <pubDate>Fri, 15 Sep 2017 00:00:00 +0000</pubDate>
@@ -121,6 +300,15 @@ In this analysis, I use pandas for dataframe, numpy for dealing with numbers (be
       <guid>/posts_o/the-confusing-case-of-thai-transliteration-system/</guid>
       <description>Thai Version
 You decided to visit Thailand for whatever reason I don&amp;rsquo;t want to know. (It&amp;rsquo;s not my business.) Assuming you&amp;rsquo;re in from outside of Asia, you&amp;rsquo;ll land at Suvarnabhumi Airport. The problem? The locals don&amp;rsquo;t pronounce it that way. All the names and signs here are romanized using the Royal Thai General System of Transcription (RTGS). The big problem with this is that it is light years away of what Thais actually pronounce.</description>
+    </item>
+    
+    <item>
+      <title>The confusing case of Thai romanization system</title>
+      <link>/post/the-confusing-case-of-thai-romanization-system/</link>
+      <pubDate>Thu, 14 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/the-confusing-case-of-thai-romanization-system/</guid>
+      <description>You decided to visit Thailand for whatever reason I don&amp;rsquo;t want to know. (It&amp;rsquo;s not my business.) Assuming you&amp;rsquo;re in from outside of Asia, you&amp;rsquo;ll land at Suvarnabhumi Airport. The problem? The locals don&amp;rsquo;t pronounce it that way. All the names and signs here are romanized using the Royal Thai General System of Transcription (RTGS). The big problem with this is that it is light years away of what Thais actually pronounce.</description>
     </item>
     
     <item>
@@ -133,11 +321,30 @@ You decided to visit Thailand for whatever reason I don&amp;rsquo;t want to know
     </item>
     
     <item>
+      <title>Thailand is not really LGBT friendly</title>
+      <link>/post/thailand-is-not-really-lgbt-friendly/</link>
+      <pubDate>Fri, 08 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/thailand-is-not-really-lgbt-friendly/</guid>
+      <description>I just fished a documentary about the lives of LGBT people in China (and Hong Kong). One person from this documentary happened to be an elite in Hong Kong and he underwent sex reassignment surgery at a well-known clinic in Bangkok. She was very happy with the results and she relocated to Bangkok for however long, I don&amp;rsquo;t know. But what really got me thinking is the fact that she thought Thailand is more open to LGBT people.</description>
+    </item>
+    
+    <item>
       <title>The curious case of why Thais ask where you study</title>
       <link>/posts_o/the-curious-case-of-why-thais-ask-where-you-study/</link>
       <pubDate>Fri, 08 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>/posts_o/the-curious-case-of-why-thais-ask-where-you-study/</guid>
+      <description>I was out for a stroll and I met a middle-aged person who, I think, knows my family. Without time being wasted, she asked &amp;ldquo;where do you study?&amp;rdquo; Where, not what.
+Part of the reason why Thais ask &amp;ldquo;where&amp;rdquo; probably stems from the fact that they are a collective society, which means conformity and connections are very important. It&amp;rsquo;s safe to assume that people who went to the same school would &amp;ldquo;favor&amp;rdquo; people from their school when applying for jobs or asking for favors.</description>
+    </item>
+    
+    <item>
+      <title>The curious case of why Thais ask where you study</title>
+      <link>/post/the-curious-case-of-why-thais-ask-where-you-study/</link>
+      <pubDate>Thu, 07 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/the-curious-case-of-why-thais-ask-where-you-study/</guid>
       <description>I was out for a stroll and I met a middle-aged person who, I think, knows my family. Without time being wasted, she asked &amp;ldquo;where do you study?&amp;rdquo; Where, not what.
 Part of the reason why Thais ask &amp;ldquo;where&amp;rdquo; probably stems from the fact that they are a collective society, which means conformity and connections are very important. It&amp;rsquo;s safe to assume that people who went to the same school would &amp;ldquo;favor&amp;rdquo; people from their school when applying for jobs or asking for favors.</description>
     </item>
@@ -157,11 +364,46 @@ What is your age?
     </item>
     
     <item>
+      <title>What Thais always ask when texting</title>
+      <link>/post/what-thais-always-ask-when-texting/</link>
+      <pubDate>Tue, 05 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/what-thais-always-ask-when-texting/</guid>
+      <description>These days all the IMs (instant messeging) have a) profile picture and b) name. Assuming these two are out of the question, Thais will always ask *:
+* I know it’s a generalization but the percentage of Thais who do ask is far greater than those who don’t.
+ Are you male or female? **
+What is your age?
+(Bonus question) Are you Thai?
+** The conversation happened in English. Right away after saying hi.</description>
+    </item>
+    
+    <item>
+      <title>I no like English class</title>
+      <link>/post/i-no-like-english-class/</link>
+      <pubDate>Fri, 01 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/i-no-like-english-class/</guid>
+      <description>Earlier this year I volunteered at an “English Clinic” at my school. The premise was to let students practice English with fluent speakers. Read: they don’t really want to practice English.
+First day in, only one student there. Two of my friends were there so we together helped her correcting her written homework. Half way in I still spoke English with her but I sensed something wrong. As it turned out, she barely understood what I was saying, so I resorted to speaking to her in her native language.</description>
+    </item>
+    
+    <item>
       <title>The state of Thai English texting group</title>
       <link>/posts_o/the-state-of-thai-english-texting-group/</link>
       <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/posts_o/the-state-of-thai-english-texting-group/</guid>
+      <description>Most Thais can’t speak fluent English and this is a fact. But some like to pretend they can.
+I found a member recruitment post so I said to myself “hey this looks interesting-ish this is great finally Thais will have more resources to learn English.” Instant disappointment.
+The first group I was in was created by a Thai who wants to work in Europe. Her English? Mia Farang English — very broken English.</description>
+    </item>
+    
+    <item>
+      <title>The state of Thai English texting group</title>
+      <link>/post/the-state-of-thai-english-texting-group/</link>
+      <pubDate>Tue, 29 Aug 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/post/the-state-of-thai-english-texting-group/</guid>
       <description>Most Thais can’t speak fluent English and this is a fact. But some like to pretend they can.
 I found a member recruitment post so I said to myself “hey this looks interesting-ish this is great finally Thais will have more resources to learn English.” Instant disappointment.
 The first group I was in was created by a Thai who wants to work in Europe. Her English? Mia Farang English — very broken English.</description>

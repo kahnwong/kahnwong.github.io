@@ -1,0 +1,21 @@
+{{#resume.basics}}
+  <div class="header">
+    <h1>{{name}}</h1>
+    {{#if pdfLink}}
+      <a class="pdf" title="Download PDF" href={{pdfLink}}>
+        {{> download-icon}}
+      </a>
+    {{/if}}
+  </div>
+  
+  <p>{{label}}</p>
+
+  {{#if location}}
+    <p class="grey">{{location.city}}, {{location.countryCode}}</p>
+  {{/if}}
+
+  {{#if summary}}
+    <p class="grey">{{summary}}</p>
+  {{/if}}
+
+{{/resume.basics}}

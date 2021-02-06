@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>infra on Karn Wong</title>
+    <link>/categories/infra/</link>
+    <description>Recent content in infra on Karn Wong</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Jan 2021 04:51:41 +0000</lastBuildDate><atom:link href="/categories/infra/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mongodb export woes</title>
+      <link>/post/mongodb-export-woes/</link>
+      <pubDate>Wed, 27 Jan 2021 04:51:41 +0000</pubDate>
+      
+      <guid>/post/mongodb-export-woes/</guid>
+      <description>There&amp;rsquo;s a task where I need to export 4M+ records out of mongodb, total uncompressed size is 17GB+ 26GB
+export methods mongoexport The recommended way to export is using mongoexport utility, but you have to specify the output attributes, which doesn&amp;rsquo;t work for me because the schema from older set of records are less than the newer set
+DIY python script the vanilla way But you can interact with mongodb from python, and if you read from it it&amp;rsquo;ll return a dict, which is perfect for this because you don&amp;rsquo;t have to specify the required attributes beforehand.</description>
+    </item>
+    
+  </channel>
+</rss>

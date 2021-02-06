@@ -6,7 +6,61 @@
     <description>Recent content in Tags on Karn Wong</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 15 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 31 Jan 2021 17:40:53 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>data engineering</title>
+      <link>/tags/data-engineering/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/tags/data-engineering/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gis</title>
+      <link>/tags/gis/</link>
+      <pubDate>Sun, 31 Jan 2021 17:40:53 +0000</pubDate>
+      
+      <guid>/tags/gis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>infra</title>
+      <link>/tags/infra/</link>
+      <pubDate>Wed, 27 Jan 2021 04:51:41 +0000</pubDate>
+      
+      <guid>/tags/infra/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>food-for-thought</title>
+      <link>/tags/food-for-thought/</link>
+      <pubDate>Sun, 20 Dec 2020 19:12:38 +0000</pubDate>
+      
+      <guid>/tags/food-for-thought/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>media</title>
+      <link>/tags/media/</link>
+      <pubDate>Tue, 01 Dec 2020 10:28:01 +0000</pubDate>
+      
+      <guid>/tags/media/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>data analysis</title>
+      <link>/tags/data-analysis/</link>
+      <pubDate>Thu, 03 Sep 2020 12:04:42 +0000</pubDate>
+      
+      <guid>/tags/data-analysis/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>celiac</title>
       <link>/tags/celiac/</link>
@@ -26,11 +80,11 @@
     </item>
     
     <item>
-      <title>data analysis</title>
-      <link>/tags/data-analysis/</link>
-      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      <title>data science</title>
+      <link>/tags/data-science/</link>
+      <pubDate>Fri, 22 May 2020 17:00:00 +0000</pubDate>
       
-      <guid>/tags/data-analysis/</guid>
+      <guid>/tags/data-science/</guid>
       <description></description>
     </item>
     
@@ -89,6 +143,15 @@
     </item>
     
     <item>
+      <title>Farsi</title>
+      <link>/tags/farsi/</link>
+      <pubDate>Thu, 23 Nov 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/tags/farsi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>culture</title>
       <link>/tags/culture/</link>
       <pubDate>Sat, 09 Sep 2017 00:00:00 +0000</pubDate>
@@ -107,9 +170,18 @@
     </item>
     
     <item>
+      <title>English</title>
+      <link>/tags/english/</link>
+      <pubDate>Fri, 01 Sep 2017 17:00:00 +0000</pubDate>
+      
+      <guid>/tags/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ESL</title>
       <link>/tags/esl/</link>
-      <pubDate>Wed, 30 Aug 2017 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 01 Sep 2017 17:00:00 +0000</pubDate>
       
       <guid>/tags/esl/</guid>
       <description></description>

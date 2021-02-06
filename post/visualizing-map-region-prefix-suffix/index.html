@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Karn Wong">
+<meta name="description" content="import pandas as pd import numpy as np import geopandas as gpd import geoplot as gplt import matplotlib.pyplot as plt from geoplot import polyplot from pythainlp.tokenize import word_tokenize, syllable_tokenize Data structure  name: target region name geometry: spatial column *: parent region name, e.g. in &amp;ldquo;district&amp;rdquo; dataset it would have a &amp;ldquo;province&amp;rdquo; column  Dissolving dataset in case you have multiple region level in the same file # assuming you have a district dataset and want to dissolve to province only district_filename = &amp;#34;FILE_PATH_HERE&amp;#34; gdf = gpd." />
+<meta name="keywords" content=", data analysis, gis" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="/post/visualizing-map-region-prefix-suffix/" />
+
+
+    <title>
+        
+            Visualizing map region prefix/suffix :: Karn Wong  — Homepage
+        
+    </title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.753fac8f03736f0edc9be411eb20cee875dd7bb8e73c8155fbf6a629c863f4ca.css">
+
+
+
+
+
+
+<meta itemprop="name" content="Visualizing map region prefix/suffix">
+<meta itemprop="description" content="import pandas as pd import numpy as np import geopandas as gpd import geoplot as gplt import matplotlib.pyplot as plt from geoplot import polyplot from pythainlp.tokenize import word_tokenize, syllable_tokenize Data structure  name: target region name geometry: spatial column *: parent region name, e.g. in &ldquo;district&rdquo; dataset it would have a &ldquo;province&rdquo; column  Dissolving dataset in case you have multiple region level in the same file # assuming you have a district dataset and want to dissolve to province only district_filename = &#34;FILE_PATH_HERE&#34; gdf = gpd.">
+<meta itemprop="datePublished" content="2020-09-03T12:04:42+00:00" />
+<meta itemprop="dateModified" content="2020-09-03T12:04:42+00:00" />
+<meta itemprop="wordCount" content="748">
+<meta itemprop="image" content="/"/>
+
+
+
+<meta itemprop="keywords" content="data analysis,gis," />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Visualizing map region prefix/suffix"/>
+<meta name="twitter:description" content="import pandas as pd import numpy as np import geopandas as gpd import geoplot as gplt import matplotlib.pyplot as plt from geoplot import polyplot from pythainlp.tokenize import word_tokenize, syllable_tokenize Data structure  name: target region name geometry: spatial column *: parent region name, e.g. in &ldquo;district&rdquo; dataset it would have a &ldquo;province&rdquo; column  Dissolving dataset in case you have multiple region level in the same file # assuming you have a district dataset and want to dissolve to province only district_filename = &#34;FILE_PATH_HERE&#34; gdf = gpd."/>
+
+
+
+
+
+    <meta property="article:section" content="data analysis" />
+
+    <meta property="article:section" content="gis" />
+
+
+
+    <meta property="article:published_time" content="2020-09-03 12:04:42 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">$ cd /home/</span>
+            <span class="logo__cursor" style=
+                  "
+                   
+                   ">
+            </span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/faq">FAQ</a></li><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle unselectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            
+            </p>
+        </div>
+
+        <article>
+            <h2 class="post-title"><a href="/post/visualizing-map-region-prefix-suffix/">Visualizing map region prefix/suffix</a></h2>
+
+            
+
+            <div class="post-content">
+                <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">import</span> numpy <span style="color:#f92672">as</span> np
+<span style="color:#f92672">import</span> geopandas <span style="color:#f92672">as</span> gpd
+<span style="color:#f92672">import</span> geoplot <span style="color:#f92672">as</span> gplt
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+<span style="color:#f92672">from</span> geoplot <span style="color:#f92672">import</span> polyplot
+<span style="color:#f92672">from</span> pythainlp.tokenize <span style="color:#f92672">import</span> word_tokenize, syllable_tokenize
+</code></pre></div><h1 id="data-structure">Data structure</h1>
+<ul>
+<li><strong>name</strong>: target region name</li>
+<li>geometry: spatial column</li>
+<li>*: parent region name, e.g. in &ldquo;district&rdquo; dataset it would have a &ldquo;province&rdquo; column</li>
+</ul>
+<h1 id="dissolving-dataset-in-case-you-have-multiple-region-level-in-the-same-file">Dissolving dataset in case you have multiple region level in the same file</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># assuming you have a district dataset and want to dissolve to province only</span>
+district_filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;FILE_PATH_HERE&#34;</span>
+
+gdf <span style="color:#f92672">=</span> gpd<span style="color:#f92672">.</span>read_file(district_filename)
+
+used_columns <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;province&#39;</span>, 
+                <span style="color:#e6db74">&#39;district&#39;</span>,]
+
+gdf <span style="color:#f92672">=</span> gdf<span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;prov_namt&#39;</span><span style="color:#f92672">.</span>upper(): <span style="color:#e6db74">&#39;province&#39;</span>, <span style="color:#75715e"># change to dummy</span>
+                         <span style="color:#e6db74">&#39;amp_namt&#39;</span><span style="color:#f92672">.</span>upper():<span style="color:#e6db74">&#39;district&#39;</span>, })
+
+gdf <span style="color:#f92672">=</span> gdf[used_columns<span style="color:#f92672">+</span>[<span style="color:#e6db74">&#39;geometry&#39;</span>]]
+
+<span style="color:#75715e"># desired data 🛎🛎🛎 please do create a datasest with outermost region, so we can use it as boundary for visualization</span>
+province <span style="color:#f92672">=</span> gdf<span style="color:#f92672">.</span>dissolve(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;province&#39;</span>)
+province <span style="color:#f92672">=</span> province<span style="color:#f92672">.</span>reset_index()\
+                <span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;province&#39;</span>: <span style="color:#e6db74">&#39;name&#39;</span>})\
+                <span style="color:#f92672">.</span>drop(columns<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;district&#39;</span>)
+province
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># declare dummy variable so it can be reused with other region type</span>
+df <span style="color:#f92672">=</span> province
+</code></pre></div><h1 id="eda-tokenize-region-name-use-other-tokenizer-for-your-target-language">EDA: tokenize region name. Use other tokenizer for your target language</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tokenize</span>(unique_region_values):
+    <span style="color:#e6db74">&#34;&#34;&#34;
+</span><span style="color:#e6db74">    input: unique values of region type
+</span><span style="color:#e6db74">    return: dataframe with token columns
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+    
+    temp <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame()
+    temp[<span style="color:#e6db74">&#39;name&#39;</span>] <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>Series(unique_region_values)
+    temp[<span style="color:#e6db74">&#39;token&#39;</span>] <span style="color:#f92672">=</span> temp[<span style="color:#e6db74">&#39;name&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: syllable_tokenize(x))
+    
+    <span style="color:#75715e"># Thai doesn&#39;t use space to separate words, so it&#39;s a bit wonky </span>
+    <span style="color:#75715e"># when I tell it to do such, that&#39;s why I need to see the results </span>
+    <span style="color:#75715e"># manually, and in some cases it may &#34;clip&#34; a token</span>
+    temp[<span style="color:#e6db74">&#39;token_1-1&#39;</span>] <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span>token<span style="color:#f92672">.</span>str[<span style="color:#ae81ff">0</span>]
+    temp[<span style="color:#e6db74">&#39;token_1-2&#39;</span>] <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span>token<span style="color:#f92672">.</span>str[<span style="color:#ae81ff">1</span>]
+    temp[<span style="color:#e6db74">&#39;token_1_full&#39;</span>] <span style="color:#f92672">=</span> temp[<span style="color:#e6db74">&#39;token_1-1&#39;</span>] <span style="color:#f92672">+</span> temp[<span style="color:#e6db74">&#39;token_1-2&#39;</span>]
+
+    temp[<span style="color:#e6db74">&#39;token_2-1&#39;</span>] <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span>token<span style="color:#f92672">.</span>str[<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>]
+    temp[<span style="color:#e6db74">&#39;token_2-2&#39;</span>] <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span>token<span style="color:#f92672">.</span>str[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+    temp[<span style="color:#e6db74">&#39;token_2_full&#39;</span>] <span style="color:#f92672">=</span> temp[<span style="color:#e6db74">&#39;token_2-1&#39;</span>] <span style="color:#f92672">+</span> temp[<span style="color:#e6db74">&#39;token_2-2&#39;</span>]
+    
+    <span style="color:#66d9ef">return</span> temp
+</code></pre></div><p>Don&rsquo;t forget to look through the results and pick tokens you think are &ldquo;correct&rdquo;</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tokenize(df<span style="color:#f92672">.</span>name<span style="color:#f92672">.</span>unique())
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h1 id="tokenize-with-selected-slugs">Tokenize with selected slugs</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># replace with your slugs here</span>
+slugs <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;นคร&#39;</span>, <span style="color:#e6db74">&#39;สุ&#39;</span>, <span style="color:#e6db74">&#39;สมุทร&#39;</span>, <span style="color:#e6db74">&#39;ธานี&#39;</span>, <span style="color:#e6db74">&#39;นคร&#39;</span>]
+slugs <span style="color:#f92672">=</span> sorted(list(set(slugs)))
+slugs <span style="color:#f92672">=</span> slugs[::<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#75715e"># for longest matching</span>
+
+<span style="color:#75715e"># get prefix and suffix</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_slug_1</span>(x):
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> slugs:
+        <span style="color:#66d9ef">if</span> (x<span style="color:#f92672">.</span>startswith(i)):
+            <span style="color:#66d9ef">return</span> i
+        
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_slug_2</span>(x):
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> slugs:
+        <span style="color:#66d9ef">if</span> (x<span style="color:#f92672">.</span>endswith(i)):
+            <span style="color:#66d9ef">return</span> i
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df[<span style="color:#e6db74">&#39;prefix&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;name&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: get_slug_1(x))
+df[<span style="color:#e6db74">&#39;suffix&#39;</span>] <span style="color:#f92672">=</span> df[<span style="color:#e6db74">&#39;name&#39;</span>]<span style="color:#f92672">.</span>apply(<span style="color:#66d9ef">lambda</span> x: get_slug_2(x))
+
+df
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h1 id="viz-prep">Viz prep</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># make total_bound (background outline)</span>
+<span style="color:#75715e"># and extend (so the canvas would center at the same point)</span>
+<span style="color:#75715e"># also, remember the PROVINCE dataset from the start? we&#39;re going to use that</span>
+
+province[<span style="color:#e6db74">&#39;class&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;class&#39;</span> <span style="color:#75715e"># a dummy column so it would dissolve the whole dataset</span>
+boundary <span style="color:#f92672">=</span> province<span style="color:#f92672">.</span>dissolve(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;class&#39;</span>)
+extent <span style="color:#f92672">=</span> boundary<span style="color:#f92672">.</span>total_bounds
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># set font (default matplotlib font can&#39;t render Thai)</span>
+plt<span style="color:#f92672">.</span>rcParams[<span style="color:#e6db74">&#34;font.family&#34;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Tahoma&#34;</span>
+</code></pre></div><h1 id="cleaning-it-up">Cleaning it up</h1>
+<p>There are some degree of Pali-Sanskrit influence in Thai, in which the word order is different, so it is possible for a certain *fix to appear as either prefix or suffix. it&rsquo;s like <strong>re</strong>peat and do<strong>re</strong> (for redo)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># ⛩⛩⛩ rerun from this cell onward if you want to change *fix ⛩⛩⛩</span>
+<span style="color:#75715e"># filter null *fix</span>
+_fix_column <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;suffix&#39;</span> <span style="color:#75715e"># ⛩⛩⛩ change here ⛩⛩⛩</span>
+df_temp <span style="color:#f92672">=</span> df
+df_temp <span style="color:#f92672">=</span> df_temp[df_temp[_fix_column]<span style="color:#f92672">.</span>notnull()]
+
+<span style="color:#75715e"># get count</span>
+df_temp[<span style="color:#e6db74">&#39;{}_count&#39;</span><span style="color:#f92672">.</span>format(_fix_column)] <span style="color:#f92672">=</span> df_temp[_fix_column]<span style="color:#f92672">.</span>map(df_temp[_fix_column]\
+                                            <span style="color:#f92672">.</span>value_counts()\
+                                            <span style="color:#f92672">.</span>to_dict())
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># at the largest region level it won&#39;t be much, but at a smaller level like subdistrict</span>
+<span style="color:#75715e"># having a single *fix for the entire dataset can happen, hence we should filter it out</span>
+
+<span style="color:#75715e"># filter for a *fix you want to visualize</span>
+viz_categ_count_column <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;{}_count&#39;</span><span style="color:#f92672">.</span>format(_fix_column)
+
+<span style="color:#75715e"># ⛩⛩⛩ use the second line if you want to set the threshold with median ⛩⛩⛩</span>
+threshold <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+<span style="color:#75715e"># threshold = df_temp[viz_categ_count_column].median()</span>
+
+df_temp <span style="color:#f92672">=</span> df_temp[df_temp[viz_categ_count_column] <span style="color:#f92672">&gt;=</span> threshold]
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df_temp
+</code></pre></div><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<h1 id="viz">Viz</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os
+
+key_column <span style="color:#f92672">=</span> _fix_column
+key_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;province&#39;</span> <span style="color:#75715e"># ⛩⛩⛩ set region type here #</span>
+key_count_column <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;{}_count&#39;</span><span style="color:#f92672">.</span>format(key_column)
+
+out_dir <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;plot/{}_{}&#39;</span><span style="color:#f92672">.</span>format(key_name, key_column)
+os<span style="color:#f92672">.</span>makedirs(out_dir, exist_ok<span style="color:#f92672">=</span>True)
+
+gdf <span style="color:#f92672">=</span> df_temp
+<span style="color:#66d9ef">for</span> key <span style="color:#f92672">in</span> gdf[key_column]<span style="color:#f92672">.</span>unique():    
+    ax <span style="color:#f92672">=</span> gplt<span style="color:#f92672">.</span>polyplot(boundary, figsize<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">15</span>))
+    
+    query <span style="color:#f92672">=</span> gdf[gdf[key_column]<span style="color:#f92672">==</span>key]
+    total_records <span style="color:#f92672">=</span> str(int(query[key_count_column]<span style="color:#f92672">.</span>tolist()[<span style="color:#ae81ff">0</span>]))
+
+    gplt<span style="color:#f92672">.</span>polyplot(query, ax<span style="color:#f92672">=</span>ax, extent<span style="color:#f92672">=</span>extent,edgecolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;black&#39;</span>,
+                        facecolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;green&#39;</span>)   
+
+    plt<span style="color:#f92672">.</span>title(<span style="color:#e6db74">&#39;{}: {} records&#39;</span><span style="color:#f92672">.</span>format(key, total_records))
+    
+    plt<span style="color:#f92672">.</span>savefig(<span style="color:#e6db74">&#39;{}/{}_{}.png&#39;</span><span style="color:#f92672">.</span>format(out_dir, str(total_records)<span style="color:#f92672">.</span>zfill(<span style="color:#ae81ff">3</span>), key))
+<span style="color:#75715e">#     break</span>
+</code></pre></div><h1 id="output-structure">Output structure</h1>
+<figure>
+    <img src="/images/2020/08/image.png"/> 
+</figure>
+
+<h1 id="some-interesting-outputs-at-subdistrict-level">Some interesting outputs (at subdistrict level)</h1>
+<h2 id="northern-region">Northern region</h2>
+<p>You can see that the prefix &ldquo;แม่&rdquo; concentrates around the northern region.</p>
+<figure>
+    <img src="/images/2020/09/153_---.png"/> 
+</figure>
+
+<h2 id="eastern-region">Eastern region</h2>
+<p>&ldquo;โนน&rdquo; seems to be specific to the eastern seeing it&rsquo;s clustered around the eastern part of the country.</p>
+<figure>
+    <img src="/images/2020/09/image-3.png"/> 
+</figure>
+
+<h2 id="multi-region">Multi-region</h2>
+<p>As expected, &ldquo;บาง&rdquo; is clustered around the central region, no surprise here since the old name of Thailand&rsquo;s capital (it&rsquo;s located in the central region) is &ldquo;บางกอก.&rdquo; But you can see that it&rsquo;s clustered around the southern parts as well.</p>
+<figure>
+    <img src="/images/2020/09/image-4.png"/> 
+</figure>
+
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+  				<p>
+  					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/data-analysis">data analysis</a></span><span class="tag"><a href="/tags/gis">gis</a></span>
+  				</p>
+  		</div>
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2021</span>
+            
+                <span><a href="/">Karn Wong</a></span>
+            
+            <span></span>
+            <span> <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
+        </div>
+    </div>
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.4a69500057d68129e88f497d354afe68422eb56de6d15e45dbe2190858ea5a76bfcb096406f992984b241db45f47388ac57ab0376e3b32125bef7a8a6d0f06c4.js" integrity="sha512-SmlQAFfWgSnoj0l9NUr&#43;aEIutW3m0V5F2&#43;IZCFjqWna/ywlkBvmSmEskHbRfRziKxXqwN247MhJb73qKbQ8GxA=="></script>
+
+
+
+    </body>
+</html>

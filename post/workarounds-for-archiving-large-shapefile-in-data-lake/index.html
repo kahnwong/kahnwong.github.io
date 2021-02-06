@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="author" content="Karn Wong">
+<meta name="description" content="If you work with spatial data, chances are you are familiar with shapefile, a file format for viewing / editing spatial data.
+Essentially, shapefile is just a tabular data like csv, but it does thingamajig with geometry data type, where any gis tools like qgis or arcgis can understand right away. If you have a csv file with geometry column in wkt format (something like POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))), you&amp;rsquo;ll have to specify which column is to be used for geometry." />
+<meta name="keywords" content=", data engineering, gis" />
+<meta name="robots" content="noodp" />
+<meta name="theme-color" content="" />
+<link rel="canonical" href="/post/workarounds-for-archiving-large-shapefile-in-data-lake/" />
+
+
+    <title>
+        
+            Workarounds for archiving large shapefile in data lake :: Karn Wong  — Homepage
+        
+    </title>
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css" rel="stylesheet"
+    type="text/css">
+
+
+
+<link rel="stylesheet" href="/main.min.753fac8f03736f0edc9be411eb20cee875dd7bb8e73c8155fbf6a629c863f4ca.css">
+
+
+
+
+
+
+<meta itemprop="name" content="Workarounds for archiving large shapefile in data lake">
+<meta itemprop="description" content="If you work with spatial data, chances are you are familiar with shapefile, a file format for viewing / editing spatial data.
+Essentially, shapefile is just a tabular data like csv, but it does thingamajig with geometry data type, where any gis tools like qgis or arcgis can understand right away. If you have a csv file with geometry column in wkt format (something like POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))), you&rsquo;ll have to specify which column is to be used for geometry.">
+<meta itemprop="datePublished" content="2021-01-31T17:40:53+00:00" />
+<meta itemprop="dateModified" content="2021-01-31T17:40:53+00:00" />
+<meta itemprop="wordCount" content="405">
+<meta itemprop="image" content="/"/>
+
+
+
+<meta itemprop="keywords" content="data engineering,gis," />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/"/>
+
+<meta name="twitter:title" content="Workarounds for archiving large shapefile in data lake"/>
+<meta name="twitter:description" content="If you work with spatial data, chances are you are familiar with shapefile, a file format for viewing / editing spatial data.
+Essentially, shapefile is just a tabular data like csv, but it does thingamajig with geometry data type, where any gis tools like qgis or arcgis can understand right away. If you have a csv file with geometry column in wkt format (something like POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))), you&rsquo;ll have to specify which column is to be used for geometry."/>
+
+
+
+
+
+    <meta property="article:section" content="data engineering" />
+
+    <meta property="article:section" content="gis" />
+
+
+
+    <meta property="article:published_time" content="2021-01-31 17:40:53 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+    </head>
+
+    <body class="dark-theme">
+        <div class="container">
+            <header class="header">
+    <span class="header__inner">
+        <a href="/" style="text-decoration: none;">
+    <div class="logo">
+        
+            <span class="logo__mark">></span>
+            <span class="logo__text">$ cd /home/</span>
+            <span class="logo__cursor" style=
+                  "
+                   
+                   ">
+            </span>
+        
+    </div>
+</a>
+
+
+        <span class="header__right">
+            
+                <nav class="menu">
+    <ul class="menu__inner"><li><a href="/about">About</a></li><li><a href="/faq">FAQ</a></li><li><a href="/posts">Posts</a></li><li><a href="/resume">Resume</a></li>
+    </ul>
+</nav>
+
+                <span class="menu-trigger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </span>
+            
+
+            <span class="theme-toggle unselectable"><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"/>
+</svg>
+</span>
+        </span>
+    </span>
+</header>
+
+
+            <div class="content">
+                
+    <main class="post">
+
+        <div class="post-info">
+            
+            </p>
+        </div>
+
+        <article>
+            <h2 class="post-title"><a href="/post/workarounds-for-archiving-large-shapefile-in-data-lake/">Workarounds for archiving large shapefile in data lake</a></h2>
+
+            
+
+            <div class="post-content">
+                <p>If you work with spatial data, chances are you are familiar with <code>shapefile</code>, a file format for viewing / editing spatial data.</p>
+<p>Essentially, shapefile is just a tabular data like <code>csv</code>, but it does thingamajig with <code>geometry</code> data type, where any gis tools like <code>qgis</code> or <code>arcgis</code> can understand right away. If you have a csv file with geometry column in <code>wkt</code> format (something like <code>POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))</code>), you&rsquo;ll have to specify which column is to be used for geometry.</p>
+<p>If you want to store shapefile in data lake, it&rsquo;s best to store it as parquet or any format you normally use, since it&rsquo;s faster to read and filter. For comparison, parsing a 5GB+ shapefile and filter takes <em>longer</em> than reading a gzipped json, filter, and export to shapefile.</p>
+<p>Normally I would use <code>geopandas</code> to read spatial data and convert it to pandas dataframe, then send it to spark. But since the shapefile is very large, it takes forever to read in geopandas. This tells me that there is a parsing bottleneck going on. And geopandas can&rsquo;t read shapefile with multiple geometry types (this shouldn&rsquo;t happen, but sometimes during editing, clipping this here and there can cause invalid geometry).</p>
+<p>Qgis has a tool to fix invalid geometries, so I tried exporting shapefile to csv, but qgis went OOM. But both qgis and geopandas use <code>gdal</code> for backend, and it has a CLI interface, so I look up how to export shapefile to tsv (<code>tab</code> as a seperator makes it faster to parse since it rarely occurs).</p>
+<p>Now things work perfectly. As a bonus, gdal also skip invalid geometries by default (unlike in geopandas where it will throw an error and there&rsquo;s no way to ignore it and tell the parser to keep going).</p>
+<p>At this point I have a nice tsv file, and reading &amp; archiving via spark is now a breeze. Yay!</p>
+<h1 id="takeaway">Takeaway</h1>
+<ul>
+<li>If it takes too long to read, maybe it&rsquo;s a parsing bottleneck. Find a way to convert it to another format so it&rsquo;s eaiser to parse.</li>
+<li>Sometimes your initial tools of choice might have some quirks. In most cases there will be similar tools out there that can workaround the issues. (In this case, use gdal to convert to csv in lieu of geopandas because gpd can&rsquo;t work with invalid geometries &amp; takes longer to read compared to feeding spark a straight csv/tsv).</li>
+</ul>
+
+            </div>
+        </article>
+
+        <hr />
+
+        <div class="post-info">
+  				<p>
+  					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-tag meta-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7" y2="7"></line></svg><span class="tag"><a href="/tags/data-engineering">data engineering</a></span><span class="tag"><a href="/tags/gis">gis</a></span>
+  				</p>
+  		</div>
+    </main>
+
+            </div>
+
+            
+                <footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>&copy; 2021</span>
+            
+                <span><a href="/">Karn Wong</a></span>
+            
+            <span></span>
+            <span> <a href="/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></span>
+        </div>
+    </div>
+    <div class="footer__inner">
+        <div class="footer__content">
+            <span>Powered by <a href="http://gohugo.io">Hugo</a></span>
+            <span>Made with &#10084; by <a href="https://github.com/rhazdon">Djordje Atlialp</a></span>
+        </div>
+    </div>
+</footer>
+
+            
+        </div>
+
+        
+
+
+
+
+<script type="text/javascript" src="/bundle.min.4a69500057d68129e88f497d354afe68422eb56de6d15e45dbe2190858ea5a76bfcb096406f992984b241db45f47388ac57ab0376e3b32125bef7a8a6d0f06c4.js" integrity="sha512-SmlQAFfWgSnoj0l9NUr&#43;aEIutW3m0V5F2&#43;IZCFjqWna/ywlkBvmSmEskHbRfRziKxXqwN247MhJb73qKbQ8GxA=="></script>
+
+
+
+    </body>
+</html>

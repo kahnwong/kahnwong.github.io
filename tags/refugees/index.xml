@@ -17,5 +17,15 @@
 In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
     </item>
     
+    <item>
+      <title>Resettled refugees in Sweden</title>
+      <link>/post/resettled-refugees-in-sweden/</link>
+      <pubDate>Mon, 30 Jul 2018 17:00:00 +0000</pubDate>
+      
+      <guid>/post/resettled-refugees-in-sweden/</guid>
+      <description>One of my friends is a Syrian refugee, who was granted asylum in Sweden last year. I also want to try data analysis, so it fits that I should analyze something that&amp;rsquo;s relevant to my friend. This is my first ever analysis in pandas, apologies for code abomination in advance.
+In this analysis, I use pandas for dataframe, numpy for dealing with numbers (because I need to count and do some math with it) and matplotlib for plotting graphs.</description>
+    </item>
+    
   </channel>
 </rss>
